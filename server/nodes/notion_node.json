@@ -24,6 +24,7 @@
           "description": "The GitHub handle of the user."
         }
       ],
+      "headersParameters": [],
       "queryParameters": [], // e.g., ?sort=updated
       "bodyParameters": []   // Empty for this GET request
     },

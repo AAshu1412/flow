@@ -1,19 +1,17 @@
+import { GodNode, ServiceNode, GeneralNode, LLMNode, AnyNode } from "../types/functionality-type";
 const god_node = require("../nodes/god_node.json");
 
-
-const service_mapping = async (service, operation) => {
+const service_mapping = async (service:string, operation:string): Promise<AnyNode | null> => {
     if (service === "god_node") {
         if (operation === "generic_http") {
             return god_node.generic_http;
         }
     }
-    else {
-        return null;
-    }
+    return null;
 }
 
 
-const api_execution = async (service, operation, nodePayload) => {
+const api_execution = async (service: string    , operation: string, nodePayload) => {
 
     if (service === "god_node" && operation === "generic_http") {
         
