@@ -1,0 +1,39 @@
+{
+  "templateId": "github_fetch_user_repos_v1",
+  "service": "github",
+  "operation": "fetch_user_repos",
+  
+  "ui": {
+    "type": "custom/apiNode",       // For React Flow custom node rendering
+    "label": "Fetch User Repos",
+    "description": "Retrieves a list of public repositories for a specified GitHub user.",
+    "icon": "github-logo-url" 
+  },
+
+  "execution": {
+    "method": "GET",
+    "endpoint": "https://api.github.com/users/{{username}}/repos",
+    "requiresAuthentication": true, // Tells the UI to render the "Select Credential" dropdown
+    
+    "inputs": {
+      "pathVariables": [
+        {
+          "key": "username",
+          "type": "string",
+          "mandatory": true,
+          "description": "The GitHub handle of the user."
+        }
+      ],
+      "queryParameters": [], // e.g., ?sort=updated
+      "bodyParameters": []   // Empty for this GET request
+    },
+    
+    "staticHeaders": [
+      {
+        "key": "Accept",
+        "value": "application/vnd.github.v3+json",
+        "mandatory": true
+      }
+    ]
+  }
+}

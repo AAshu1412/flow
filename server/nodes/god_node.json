@@ -1,0 +1,48 @@
+{
+  "generic_http": {
+    "templateId": "core_http_request_v1",
+    "service": "api",
+    "operation": "generic_http",
+    "ui": {
+      "type": "custom/httpNode",
+      "label": "HTTP Request",
+      "description": "Make a custom HTTP request to any API.",
+      "icon": "globe-icon-url"
+    },
+    "execution": {
+      "method": "DYNAMIC",
+      "endpoint": "DYNAMIC",
+      "requiresAuthentication": false,
+      "inputs": {
+        "requestSetup": [      
+          {
+            "key": "method",
+            "type": "dropdown",
+            "options": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ],
+            "mandatory": true
+          },
+          {
+            "key": "url",
+            "type": "string",
+            "mandatory": true,
+            "description": "e.g., https://api.example.com/users/{{$json.id}}"
+          }
+        ],
+        "headers": {
+          "type": "keyValueMap",
+          "description": "Add custom headers (e.g., Authorization: Bearer {{$json.token}})"
+        },
+        "body": {
+          "type": "jsonTextarea",
+          "description": "JSON body for POST/PUT requests. Supports {{expressions}}."
+        }
+      }
+    }
+  }
+}
