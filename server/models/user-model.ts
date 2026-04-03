@@ -175,7 +175,9 @@ const userSchema = new Schema({
     username: {
         type: String,
         require: true,
-    }})
+    }
+
+})
 
 interface IUser extends Document {
   username: string;
