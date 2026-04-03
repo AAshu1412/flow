@@ -1,8 +1,9 @@
-const {User} = require("../models/user-model");
-const bcrypt = require("bcryptjs");
+import User from "../models/user-model";
+import bcrypt from "bcryptjs";
+import {Request,Response} from "express";
 
 
-// const register = async (req, res) => {
+// const register = async (req:Request, res:Response) => {
 //     try {
 //         console.log(req.body)
 //         const { username, email, phone, password } = req.body;
@@ -91,56 +92,14 @@ const bcrypt = require("bcryptjs");
 
 
 
-const add_email = async (req, res) => {
-  try {
-    const id = req.userID;
-    const { email } = req.body;
-    const normalizedEmail = email?.trim().toLowerCase();
-
-    if (!normalizedEmail) {
-      return res.status(400).json({ msg: "Email is required" });
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      {
-        $set: { 
-          email: normalizedEmail,
-          has_completed_onboarding: true,
-          "user.email": normalizedEmail,
-        }
-      },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({
-        error: "User not found",
-        status_response: 404,
-      });
-    }
-
-    res.status(200).json({
-      msg: "email added successfully",
-      status_response: 200,
-      data: {
-        email: updatedUser.email,
-        has_completed_onboarding: updatedUser.has_completed_onboarding,
-      },
-    });
-  } catch (error) {
-    res.status(500).send({ error: error.message, status_response: 500 });
-  }
-};
-
-const user = async (req, res) => {
+const user = async (req: Request, res: Response) => {
     try {
         const userData = req.user;
         console.log(userData);
 
         return res.status(200).json({status_response: 200, data: userData });
     }
-    catch (error) {
+    catch (error: any) {
         res.status(500).send({ status_response: 500, error: error.message });
     }
 }
@@ -157,6 +116,4 @@ const user = async (req, res) => {
 
 
 
-
-
-module.exports = { add_email, user };
+export default { user };

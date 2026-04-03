@@ -1,5 +1,5 @@
 import { GodNode, ServiceNode, GeneralNode, LLMNode, AnyNode, NodePayload, ExecutionResult } from "../types/functionality-type";
-const god_node = require("../nodes/god_node.json");
+import god_node from "../nodes/god_node.json";
 
 const service_mapping = async (service:string, operation:string): Promise<AnyNode | null> => {
     if (service === "god_node") {
@@ -85,4 +85,4 @@ const api_execution = async (service: string, operation: string, nodePayload: No
 };
 
 
-module.exports = { service_mapping };
+export { service_mapping, api_execution };

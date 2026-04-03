@@ -1,7 +1,13 @@
-const jwt = require("jsonwebtoken");
-const {User} = require("../models/user-model");
+import jwt, { JwtPayload } from "jsonwebtoken";
+import User from "../models/user-model";
+import {Request,Response,NextFunction} from "express";
 
-const authMiddleware = async (req, res, next) => {
+
+interface CustomJwtPayload extends JwtPayload {
+  username: string;
+}
+
+const authMiddleware = async (req:Request, res:Response, next:NextFunction) => {
   const token = req.header("Authorization");
 
   if (!token) {
@@ -17,11 +23,15 @@ const authMiddleware = async (req, res, next) => {
   console.log("Token form auth middleware : " + jwtToken);
 
   try {
-    const isVerified = jwt.verify(jwtToken, process.env.JWT_SECRET_KEY);
+    const secretKey=process.env.JWT_SECRET_KEY;
+    if(!secretKey){
+        return res.status(500).json({ msg: "Internal Server Error: JWT secret key not found" });
+    }
+    const isVerified = jwt.verify(jwtToken, secretKey) as CustomJwtPayload;
     console.log("Decoded JWT Payload:", isVerified);
-
+    
     const userData = await User.findOne({
-      _id: isVerified.userID,
+      // _id: isVerified.userID,
       username: isVerified.username,
     });
     // .select('-access_token -access_token_expires_in -refresh_token -refresh_token_expires_in -token_type');
@@ -32,24 +42,17 @@ const authMiddleware = async (req, res, next) => {
 
     console.log("Data after verifying:", userData);
 
-    req.user = {
-      ...userData.user,
-      repos: userData.repos,
-      _id: userData._id,
-      has_completed_onboarding: userData.has_completed_onboarding,
-    };
-    req.token = token;
     req.userID = userData._id;
-    req.access_token = userData.access_token;
+
 
     next();
     console.log(
       "\n\n########################################################\n\n"
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Auth Middleware Error:", error.message);
     return res.status(401).json({ message: "Unauthorized: Invalid token." });
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

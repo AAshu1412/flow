@@ -1,11 +1,12 @@
+import {Request,Response,NextFunction} from "express";
 
-const validate=(schema)=>async (req,res,next)=>{
+const validate=(schema:any)=>async (req:Request,res:Response,next:NextFunction)=>{
 
     try {
         const parseBody= await schema.parseAsync(req.body);
         req.body=parseBody;
         next();
-    } catch (err) {
+    } catch (err:any) {
         console.log(`validate-middleware == ${err}`);
         
         const status=422;
@@ -24,4 +25,4 @@ const validate=(schema)=>async (req,res,next)=>{
     }
 }
 
-module.exports=validate;
+export default validate;

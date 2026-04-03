@@ -1,4 +1,4 @@
-const {z}= require("zod");
+import { z } from "zod";
 
 // const loginSchema=z.object({
 
@@ -25,23 +25,23 @@ const {z}= require("zod");
 
 // });
 
-const emailSchema=z.object({
-    email:z.email({required_error:"email is required"})
-    .trim()
-    .min(3,{message:"email must be of atleast 3 characters"})
-    .max(255,{message:"email must not be more than 255 characters"}),
+const emailSchema = z.object({
+    email: z.email({ error: "email is required" })
+        .trim()
+        .min(3, { message: "email must be of atleast 3 characters" })
+        .max(255, { message: "email must not be more than 255 characters" }),
 });
 
-const repoNameSchema=z.object({
-    repo_name:z.string({required_error:"repo name is required"})
-    .trim()
-    .min(1,{message:"repo name must be of atleast 1 character"})
+const repoNameSchema = z.object({
+    repo_name: z.string({ error: "repo name is required" })
+        .trim()
+        .min(1, { message: "repo name must be of atleast 1 character" })
 });
 
-const repoContentSchema= repoNameSchema.extend({
-    path:z.string({required_error:"path is required"})
-    .trim()
-    .min(1,{message:"path must be of atleast 1 character"})
+const repoContentSchema = repoNameSchema.extend({
+    path: z.string({ error: "path is required" })
+        .trim()
+        .min(1, { message: "path must be of atleast 1 character" })
 });
 
-module.exports={emailSchema,repoNameSchema,repoContentSchema};
+export { emailSchema, repoNameSchema, repoContentSchema };
