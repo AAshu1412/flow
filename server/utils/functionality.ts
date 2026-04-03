@@ -1,4 +1,4 @@
-import { GodNode, ServiceNode, GeneralNode, LLMNode, AnyNode } from "../types/functionality-type";
+import { GodNode, ServiceNode, GeneralNode, LLMNode, AnyNode, NodePayload, ExecutionResult } from "../types/functionality-type";
 const god_node = require("../nodes/god_node.json");
 
 const service_mapping = async (service:string, operation:string): Promise<AnyNode | null> => {
@@ -11,7 +11,7 @@ const service_mapping = async (service:string, operation:string): Promise<AnyNod
 }
 
 
-const api_execution = async (service: string    , operation: string, nodePayload) => {
+const api_execution = async (service: string, operation: string, nodePayload: NodePayload): Promise<ExecutionResult | null> => {
 
     if (service === "god_node" && operation === "generic_http") {
         
@@ -29,10 +29,10 @@ const api_execution = async (service: string    , operation: string, nodePayload
         const headers = new Headers();
         
         for (const [key, value] of Object.entries(req_headers)) {
-            headers.append(key, value);
+            headers.append(key, value as string);
         }
 
-        const fetchOptions = {
+        const fetchOptions: RequestInit = {
             method: method,
             headers: headers
         };
@@ -55,7 +55,7 @@ const api_execution = async (service: string    , operation: string, nodePayload
             const response = await fetch(endpoint, fetchOptions);
             
             const contentType = response.headers.get("content-type");
-            let responseData;
+            let responseData: any;
             
             // 3. Dynamic Response Parsing
             if (contentType && contentType.includes("application/json")) {
@@ -73,13 +73,15 @@ const api_execution = async (service: string    , operation: string, nodePayload
                 data: responseData
             };
 
-        } catch (error) {
+        } catch (error: any) {
             return {
                 success: false,
-                error: error.message
+                error: error?.message || "Unknown error occurred"
             };
         }
     }
+    
+    return null;
 };
 
 

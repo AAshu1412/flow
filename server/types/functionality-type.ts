@@ -11,6 +11,7 @@ export interface NodeInput {
     options?: string[];
     mandatory?: boolean;
     description?: string;
+    value?: any;
 }
 
 export interface GodNodeExecution {
@@ -64,3 +65,18 @@ export interface LLMNode {
 }
 
 export type AnyNode = GeneralNode | LLMNode | GodNode | ServiceNode;
+
+export interface NodePayload {
+    method?: string;
+    url?: string;
+    headers?: Record<string, string>;
+    body?: any;
+    [key: string]: any;
+}
+
+export interface ExecutionResult {
+    success: boolean;
+    statusCode?: number;
+    data?: any;
+    error?: string;
+}
