@@ -34,14 +34,14 @@
             "description": "e.g., https://api.example.com/users/{{$json.id}}"
           }
         ],
-        "headers": {
+        "headers": [{
           "type": "keyValueMap",
           "description": "Add custom headers (e.g., Authorization: Bearer {{$json.token}})"
-        },
-        "body": {
+        }],
+        "body": [{
           "type": "jsonTextarea",
           "description": "JSON body for POST/PUT requests. Supports {{expressions}}."
-        }
+        }]
       }
     }
   }
