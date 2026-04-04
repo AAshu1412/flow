@@ -100,4 +100,106 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
     }
 };
 
-export default { google_authenticate_callback };
+
+const notion_authenticate_callback = async (req: Request, res: Response) => {
+    const code = req.query.code as string;
+    console.log("Notion Callback code: "+code);
+
+    if (!code) {
+        return res.status(400).send('No code provided');
+    }
+
+    try {
+
+        const encoded = btoa(`${process.env.NOTION_CLIENT_ID}:${process.env.NOTION_CLIENT_SECRET}`);
+
+        // 3. Exchange the code for an Access Token
+        const tokenResponse = await fetch('https://api.notion.com/v1/oauth/token', {
+            method: 'POST',
+            headers: {
+                Accept: "application/json",
+                'Content-Type': 'application/json',
+                Authorization: `Basic ${encoded}`,
+            },
+            body: JSON.stringify({
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: "http://localhost:5001/api/auth/notion/callback"
+            })
+        });
+
+        const tokenData = await tokenResponse.json();
+
+        if (tokenData.error) {
+            return res.status(400).send('Failed to get token: ' + tokenData.error_description);
+        }
+
+        console.log("Notion Token: "+JSON.stringify(tokenData));
+
+        // 4. Use the Access Token to fetch the user's Notion profile
+        const userResponse = await fetch('https://api.notion.com/v1/users/me', {
+            headers: {
+                Authorization: `Bearer ${tokenData.access_token}`,
+                'Notion-Version': '2026-03-11'
+            }
+        });
+
+        const userData = await userResponse.json();
+        console.log("Notion User: "+JSON.stringify(userData));
+
+        const absoluteExpiryTime = Date.now() + (tokenData.expires_in * 1000);
+
+
+        
+        // if (userData && tokenData) {
+        //    const userInDB = await User.findOne({ notion_id: userData.id });
+
+        //    if (userInDB) {
+        //         userInDB.email = userData.email;
+        //         userInDB.name = userData.name;
+        //         userInDB.picture = userData.avatar_url;
+                
+        //         userInDB.notion_oauth = {
+        //             access_token: tokenData.access_token,
+        //             refresh_token: tokenData.refresh_token || userInDB.notion_oauth.refresh_token,
+        //             token_type: tokenData.token_type,
+        //             access_token_expires_in: absoluteExpiryTime, // Save the absolute time
+        //             id_token: tokenData.id_token || userInDB.notion_oauth.id_token,
+        //         };
+                
+        //         await userInDB.save();
+        //    } else {
+        //         await User.create({
+        //             notion_id: userData.id,
+        //             email: userData.email,
+        //             name: userData.name,
+        //             picture: userData.avatar_url,
+        //             notion_oauth: {
+        //                 access_token: tokenData.access_token,
+        //                 refresh_token: tokenData.refresh_token,
+        //                 token_type: tokenData.token_type,
+        //                 access_token_expires_in: absoluteExpiryTime, // Save the absolute time
+        //                 id_token: tokenData.id_token,
+        //             },
+        //         });
+        //    }
+        // }
+
+        // 4. Generate your own app's JWT to log the user into your frontend
+        const savedUser = await User.findOne({ notion_id: userData.id });
+        const appToken = savedUser?.generateToken();
+        // Success! You now have the user's profile and the access token.
+        // In your workflow tool, you would save the 'tokenData.access_token' to your DB here.
+        res.json({
+            message: "Successfully logged in manually!",
+            user: userData,
+            tokens: tokenData
+        });
+
+    } catch (error) {
+        console.error('Error during OAuth flow:', error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+export default { google_authenticate_callback, notion_authenticate_callback };

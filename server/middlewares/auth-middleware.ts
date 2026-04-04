@@ -1,10 +1,10 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import User from "../models/user-model";
-import {Request,Response,NextFunction} from "express";
+import { Request, Response, NextFunction } from "express";
 import { CustomJwtPayload } from "../types/user-type";
 
 
-const authMiddleware = async (req:Request, res:Response, next:NextFunction) => {
+const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.header("Authorization");
 
   if (!token) {
@@ -20,13 +20,13 @@ const authMiddleware = async (req:Request, res:Response, next:NextFunction) => {
   console.log("Token form auth middleware : " + jwtToken);
 
   try {
-    const secretKey=process.env.JWT_SECRET_KEY;
-    if(!secretKey){
-        return res.status(500).json({ msg: "Internal Server Error: JWT secret key not found" });
+    const secretKey = process.env.JWT_SECRET_KEY;
+    if (!secretKey) {
+      return res.status(500).json({ msg: "Internal Server Error: JWT secret key not found" });
     }
     const isVerified = jwt.verify(jwtToken, secretKey) as CustomJwtPayload;
     console.log("Decoded JWT Payload:", isVerified);
-    
+
     const userData = await User.findOne({
       google_id: isVerified.google_id,
       email: isVerified.email,
@@ -41,7 +41,7 @@ const authMiddleware = async (req:Request, res:Response, next:NextFunction) => {
 
     req.db_doc_id = userData._id;
     req.userID = userData.google_id;
-    req.user = {google_id: userData.google_id, email: userData.email, name: userData.name, picture: userData.picture};
+    req.user = { google_id: userData.google_id, email: userData.email, name: userData.name, picture: userData.picture };
 
 
     next();

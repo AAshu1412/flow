@@ -26,4 +26,14 @@ const google_authenticate = async (req: Request, res: Response) => {
     }
 }
 
-export default { google_authenticate };
+const notion_authenticate = async (req: Request, res: Response) => {
+    try {
+        const url = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_CLIENT_ID}&redirect_uri=${encodeURIComponent("http://localhost:5001/api/auth/notion/callback")}&response_type=code`;
+    res.redirect(url);
+    }
+    catch (error: any) {
+        res.status(500).send({ status_response: 500, error: error.message });
+    }
+}
+
+export default { google_authenticate, notion_authenticate };
