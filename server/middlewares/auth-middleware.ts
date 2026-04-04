@@ -39,9 +39,10 @@ const authMiddleware = async (req:Request, res:Response, next:NextFunction) => {
 
     console.log("Data after verifying:", userData);
 
+    req.db_doc_id = userData._id;
     req.userID = userData.google_id;
     req.user = {google_id: userData.google_id, email: userData.email, name: userData.name, picture: userData.picture};
-    
+
 
     next();
     console.log(
