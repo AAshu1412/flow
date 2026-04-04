@@ -39,6 +39,9 @@ export interface IDiscordConnection extends Document {
     userId: Types.ObjectId;
     discord_user_id: string;
     username: string;
+    global_name?: string;
+    email?: string;
+    token_type: string;
     access_token: string;
     refresh_token: string;
     scope: string;

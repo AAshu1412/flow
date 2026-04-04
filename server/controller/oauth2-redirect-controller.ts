@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import passport, { use } from "passport";
-import { GoogleConnection, NotionConnection, User } from "../models/user-model";
+import { DiscordConnection, GoogleConnection, NotionConnection, User } from "../models/user-model";
 import { Types } from "mongoose";
 
 
@@ -266,12 +266,54 @@ const code = req.query.code as string;
         const userData = await userResponse.json();
 
 
-        
- res.json({
+ 
+
+        if (userData && tokenData ) {
+            const absoluteExpiryTime = Date.now() + (tokenData.expires_in * 1000);
+
+  const userInDB = await User.findById(userId);
+        if (!userInDB) {
+            return res.status(404).send('User not found in database');
+        }
+
+        let discordConn = await DiscordConnection.findOne({
+            userId: userInDB._id,
+            discord_user_id: userData.id    
+        });
+
+            if (discordConn) {
+                // UPDATE existing connection
+                discordConn.access_token = tokenData.access_token;
+                discordConn.refresh_token = tokenData.refresh_token || discordConn.refresh_token;
+                discordConn.access_token_expires_in = absoluteExpiryTime;
+                discordConn.scope = tokenData.scope || discordConn.scope;
+                await discordConn.save();
+            } else {
+                // CREATE new connection
+                discordConn = await DiscordConnection.create({
+                    userId: userInDB._id,
+                    discord_user_id: userData.id,
+                    username: userData.username,
+                    global_name: userData.global_name,
+                    email: userData.email,
+                    access_token: tokenData.access_token,
+                    refresh_token: tokenData.refresh_token,
+                    token_type: tokenData.token_type,
+                    access_token_expires_in: absoluteExpiryTime,
+                    scope: tokenData.scope,
+                });
+
+                // LINK it to the User's array!
+                userInDB.discord_connections.push(discordConn._id as Types.ObjectId);
+                await userInDB.save();
+            }
+
+            res.json({
                 message: "Successfully logged in discord!",
                 user: userData,
-                tokens: tokenData,
+                tokens: tokenData
             });
+        }
 
     } catch (error) {
         console.error('Error during OAuth flow:', error);

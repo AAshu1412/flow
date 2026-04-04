@@ -121,8 +121,11 @@ const discordSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     discord_user_id: { type: String, required: true },
     username: { type: String, required: true },
+    global_name : { type: String, required: false },
+    email: { type: String, required: false },
     scope: { type: String, required: true },
     access_token: { type: String, required: true },
+    token_type: { type: String, required: true },
     refresh_token: { type: String, required: true },
     access_token_expires_in: { type: Number, required: true }, // Absolute timestamp
     // Optional: If they connected a specific server/guild to a workflow
