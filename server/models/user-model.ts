@@ -206,6 +206,10 @@ const userSchema = new Schema({
             type: Number,
             require: true,
         },
+        id_token: {
+            type: String,
+            require: true,
+        },
     },
 })
 

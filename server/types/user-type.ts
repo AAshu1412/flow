@@ -6,6 +6,7 @@ export interface GoogleOauth {
     refresh_token: string;
     token_type: string;
     access_token_expires_in: number;
+    id_token: string;
 }
 
 export interface IUser extends Document {
@@ -14,6 +15,7 @@ export interface IUser extends Document {
   name: string;
   picture: string;
   google_oauth: GoogleOauth;
+  generateToken: () => string;
 }
 
 export interface User {

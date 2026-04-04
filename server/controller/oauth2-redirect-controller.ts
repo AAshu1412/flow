@@ -1,5 +1,6 @@
 import {Request,Response} from "express";
 import passport, { use } from "passport";
+import User from "../models/user-model";
 
 
 const google_authenticate_callback = async (req: Request, res: Response) => {
@@ -44,6 +45,47 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
         const userData = await userResponse.json();
         console.log("OpenID: "+JSON.stringify(userData));
 
+        const absoluteExpiryTime = Date.now() + (tokenData.expires_in * 1000);
+
+
+        
+        if (userData && tokenData) {
+           const userInDB = await User.findOne({ google_id: userData.sub });
+
+           if (userInDB) {
+                userInDB.email = userData.email;
+                userInDB.name = userData.name;
+                userInDB.picture = userData.picture;
+                
+                userInDB.google_oauth = {
+                    access_token: tokenData.access_token,
+                    refresh_token: tokenData.refresh_token || userInDB.google_oauth.refresh_token,
+                    token_type: tokenData.token_type,
+                    access_token_expires_in: absoluteExpiryTime, // Save the absolute time
+                    id_token: tokenData.id_token || userInDB.google_oauth.id_token,
+                };
+                
+                await userInDB.save();
+           } else {
+                await User.create({
+                    google_id: userData.sub,
+                    email: userData.email,
+                    name: userData.name,
+                    picture: userData.picture,
+                    google_oauth: {
+                        access_token: tokenData.access_token,
+                        refresh_token: tokenData.refresh_token,
+                        token_type: tokenData.token_type,
+                        access_token_expires_in: absoluteExpiryTime, // Save the absolute time
+                        id_token: tokenData.id_token,
+                    },
+                });
+           }
+        }
+
+        // 4. Generate your own app's JWT to log the user into your frontend
+        const savedUser = await User.findOne({ google_id: userData.sub });
+        const appToken = savedUser?.generateToken();
         // Success! You now have the user's profile and the access token.
         // In your workflow tool, you would save the 'tokenData.access_token' to your DB here.
         res.json({
