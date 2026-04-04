@@ -1,11 +1,12 @@
-import {Request,Response} from "express";
+import { Request, Response } from "express";
 import passport, { use } from "passport";
-import User from "../models/user-model";
+import { GoogleConnection, NotionConnection, User } from "../models/user-model";
+import { Types } from "mongoose";
 
 
 const google_authenticate_callback = async (req: Request, res: Response) => {
     const code = req.query.code as string;
-    console.log("Google Callback code: "+code);
+    console.log("Google Callback code: " + code);
 
     if (!code) {
         return res.status(400).send('No code provided');
@@ -33,7 +34,7 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
             return res.status(400).send('Failed to get token: ' + tokenData.error_description);
         }
 
-        console.log("Google Token: "+JSON.stringify(tokenData));
+        console.log("Google Token: " + JSON.stringify(tokenData));
 
         // 4. Use the Access Token to fetch the user's Discord profile
         const userResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
@@ -43,57 +44,67 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
         });
 
         const userData = await userResponse.json();
-        console.log("OpenID: "+JSON.stringify(userData));
+        console.log("OpenID: " + JSON.stringify(userData));
 
         const absoluteExpiryTime = Date.now() + (tokenData.expires_in * 1000);
 
 
-        
         if (userData && tokenData) {
-           const userInDB = await User.findOne({ google_id: userData.sub });
+            // 1. Find the User by EMAIL (since google_id is no longer on the User schema)
+            let userInDB = await User.findOne({ email: userData.email });
 
-           if (userInDB) {
-                userInDB.email = userData.email;
-                userInDB.name = userData.name;
-                userInDB.picture = userData.picture;
-                
-                userInDB.google_oauth = {
-                    access_token: tokenData.access_token,
-                    refresh_token: tokenData.refresh_token || userInDB.google_oauth.refresh_token,
-                    token_type: tokenData.token_type,
-                    access_token_expires_in: absoluteExpiryTime, // Save the absolute time
-                    id_token: tokenData.id_token || userInDB.google_oauth.id_token,
-                };
-                
-                await userInDB.save();
-           } else {
-                await User.create({
-                    google_id: userData.sub,
+            // 2. If User doesn't exist, create the base profile
+            if (!userInDB) {
+                userInDB = await User.create({
                     email: userData.email,
                     name: userData.name,
                     picture: userData.picture,
-                    google_oauth: {
-                        access_token: tokenData.access_token,
-                        refresh_token: tokenData.refresh_token,
-                        token_type: tokenData.token_type,
-                        access_token_expires_in: absoluteExpiryTime, // Save the absolute time
-                        id_token: tokenData.id_token,
-                    },
                 });
-           }
+            }
+
+            // 3. Find if this specific Google connection already exists
+            let googleConn = await GoogleConnection.findOne({
+                userId: userInDB._id,
+                google_id: userData.sub
+            });
+
+            if (googleConn) {
+                // UPDATE existing connection
+                googleConn.access_token = tokenData.access_token;
+                googleConn.refresh_token = tokenData.refresh_token || googleConn.refresh_token;
+                googleConn.access_token_expires_in = absoluteExpiryTime;
+                googleConn.id_token = tokenData.id_token || googleConn.id_token;
+                await googleConn.save();
+            } else {
+                // CREATE new connection
+                googleConn = await GoogleConnection.create({
+                    userId: userInDB._id,
+                    google_id: userData.sub,
+                    email: userData.email,
+                    access_token: tokenData.access_token,
+                    refresh_token: tokenData.refresh_token,
+                    token_type: tokenData.token_type,
+                    access_token_expires_in: absoluteExpiryTime,
+                    id_token: tokenData.id_token,
+                });
+
+                // LINK it to the User's array!
+                userInDB.google_connections.push(googleConn._id as Types.ObjectId);
+                await userInDB.save();
+            }
+
+
+            // Generate your app's JWT to log the user into your frontend
+            const appToken = userInDB.generateToken();
+            // Success! You now have the user's profile and the access token.
+            // In your workflow tool, you would save the 'tokenData.access_token' to your DB here.
+            res.json({
+                message: "Successfully logged in manually!",
+                user: userData,
+                tokens: tokenData,
+                jwtToken: appToken
+            });
         }
-
-        // 4. Generate your own app's JWT to log the user into your frontend
-        const savedUser = await User.findOne({ google_id: userData.sub });
-        const appToken = savedUser?.generateToken();
-        // Success! You now have the user's profile and the access token.
-        // In your workflow tool, you would save the 'tokenData.access_token' to your DB here.
-        res.json({
-            message: "Successfully logged in manually!",
-            user: userData,
-            tokens: tokenData
-        });
-
     } catch (error) {
         console.error('Error during OAuth flow:', error);
         res.status(500).send('Internal Server Error');
@@ -103,11 +114,13 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
 
 const notion_authenticate_callback = async (req: Request, res: Response) => {
     const code = req.query.code as string;
-    console.log("Notion Callback code: "+code);
-
+    const userId = req.query.state as string;
+    console.log("Notion Callback code: " + code);
+    console.log("Notion Callback userId: " + userId);
     if (!code) {
         return res.status(400).send('No code provided');
     }
+    if (!userId) return res.status(400).send('No user ID state provided');
 
     try {
 
@@ -129,71 +142,58 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
         });
 
         const tokenData = await tokenResponse.json();
-
         if (tokenData.error) {
             return res.status(400).send('Failed to get token: ' + tokenData.error_description);
         }
 
-        console.log("Notion Token: "+JSON.stringify(tokenData));
+        // The human owner's data is inside tokenData, NOT the /users/me endpoint (which is the bot)
+        const notionOwner = tokenData.owner?.user;
 
-        // 4. Use the Access Token to fetch the user's Notion profile
-        const userResponse = await fetch('https://api.notion.com/v1/users/me', {
-            headers: {
-                Authorization: `Bearer ${tokenData.access_token}`,
-                'Notion-Version': '2026-03-11'
-            }
+        // 3. Verify the User exists in MongoDB
+        const userInDB = await User.findById(userId);
+        if (!userInDB) {
+            return res.status(404).send('User not found in database');
+        }
+
+        // 4. Look for an existing Notion Connection for THIS user and THIS workspace
+        let notionConn = await NotionConnection.findOne({
+            userId: userInDB._id,
+            workspace_id: tokenData.workspace_id    
         });
 
-        const userData = await userResponse.json();
-        console.log("Notion User: "+JSON.stringify(userData));
+        if (notionConn) {
+            // UPDATE: The user re-authorized the same workspace. Just update the tokens.
+            notionConn.access_token = tokenData.access_token;
+            notionConn.refresh_token = tokenData.refresh_token || notionConn.refresh_token; // Notion usually omits this
+            notionConn.bot_id = tokenData.bot_id;
+            notionConn.workspace_name = tokenData.workspace_name;
+            await notionConn.save();
+        } else {
+            // CREATE: The user is authorizing a brand new workspace.
+            notionConn = await NotionConnection.create({
+                userId: userInDB._id,
+                notion_user_id: notionOwner.id,
+                workspace_id: tokenData.workspace_id,
+                workspace_name: tokenData.workspace_name,
+                bot_id: tokenData.bot_id,
+                access_token: tokenData.access_token,
+                refresh_token: tokenData.refresh_token || "no_refresh_token",
+                token_type: tokenData.token_type || "bearer",
+                name: notionOwner?.name,
+                email: notionOwner?.person?.email
+            });
 
-        const absoluteExpiryTime = Date.now() + (tokenData.expires_in * 1000);
+            // LINK IT: Push the newly created NotionConnection ObjectId into the User's array
+            userInDB.notion_connections.push(notionConn._id as Types.ObjectId);
+            await userInDB.save();
+        }
 
+        // 5. Success! Redirect the user back to your frontend dashboard
+        // res.redirect("http://localhost:5173/dashboard?integration=notion_success");
 
-        
-        // if (userData && tokenData) {
-        //    const userInDB = await User.findOne({ notion_id: userData.id });
-
-        //    if (userInDB) {
-        //         userInDB.email = userData.email;
-        //         userInDB.name = userData.name;
-        //         userInDB.picture = userData.avatar_url;
-                
-        //         userInDB.notion_oauth = {
-        //             access_token: tokenData.access_token,
-        //             refresh_token: tokenData.refresh_token || userInDB.notion_oauth.refresh_token,
-        //             token_type: tokenData.token_type,
-        //             access_token_expires_in: absoluteExpiryTime, // Save the absolute time
-        //             id_token: tokenData.id_token || userInDB.notion_oauth.id_token,
-        //         };
-                
-        //         await userInDB.save();
-        //    } else {
-        //         await User.create({
-        //             notion_id: userData.id,
-        //             email: userData.email,
-        //             name: userData.name,
-        //             picture: userData.avatar_url,
-        //             notion_oauth: {
-        //                 access_token: tokenData.access_token,
-        //                 refresh_token: tokenData.refresh_token,
-        //                 token_type: tokenData.token_type,
-        //                 access_token_expires_in: absoluteExpiryTime, // Save the absolute time
-        //                 id_token: tokenData.id_token,
-        //             },
-        //         });
-        //    }
-        // }
-
-        // 4. Generate your own app's JWT to log the user into your frontend
-        const savedUser = await User.findOne({ notion_id: userData.id });
-        const appToken = savedUser?.generateToken();
-        // Success! You now have the user's profile and the access token.
-        // In your workflow tool, you would save the 'tokenData.access_token' to your DB here.
         res.json({
-            message: "Successfully logged in manually!",
-            user: userData,
-            tokens: tokenData
+            message: "Successfully logged in notion!",
+            tokens: tokenData,
         });
 
     } catch (error) {

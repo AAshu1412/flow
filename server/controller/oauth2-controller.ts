@@ -1,5 +1,6 @@
 import {Request,Response} from "express";
 import passport from "passport";
+import {User} from "../models/user-model";
 
 // const google_authenticate = async (req: Request, res: Response) => {
 //     try {
@@ -26,9 +27,12 @@ const google_authenticate = async (req: Request, res: Response) => {
     }
 }
 
+
 const notion_authenticate = async (req: Request, res: Response) => {
     try {
-        const url = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_CLIENT_ID}&redirect_uri=${encodeURIComponent("http://localhost:5001/api/auth/notion/callback")}&response_type=code`;
+        
+        const userId = req.db_doc_id;
+        const url = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_CLIENT_ID}&redirect_uri=${encodeURIComponent("http://localhost:5001/api/auth/notion/callback")}&response_type=code&state=${userId}`;
     res.redirect(url);
     }
     catch (error: any) {
