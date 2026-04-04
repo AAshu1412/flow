@@ -1,12 +1,12 @@
 // types.d.ts
 import { Request } from "express";
+import { User } from "./types/user-type";
 
 declare global {
   namespace Express {
     export interface Request {
-      username?: any; 
-      userID?: any;
-      user?: any; 
+      userID: string;
+      user: User; 
     }
   }
 }

@@ -1,11 +1,8 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import User from "../models/user-model";
 import {Request,Response,NextFunction} from "express";
+import { CustomJwtPayload } from "../types/user-type";
 
-
-interface CustomJwtPayload extends JwtPayload {
-  username: string;
-}
 
 const authMiddleware = async (req:Request, res:Response, next:NextFunction) => {
   const token = req.header("Authorization");
@@ -31,8 +28,8 @@ const authMiddleware = async (req:Request, res:Response, next:NextFunction) => {
     console.log("Decoded JWT Payload:", isVerified);
     
     const userData = await User.findOne({
-      // _id: isVerified.userID,
-      username: isVerified.username,
+      google_id: isVerified.google_id,
+      email: isVerified.email,
     });
     // .select('-access_token -access_token_expires_in -refresh_token -refresh_token_expires_in -token_type');
 
@@ -42,8 +39,9 @@ const authMiddleware = async (req:Request, res:Response, next:NextFunction) => {
 
     console.log("Data after verifying:", userData);
 
-    req.userID = userData._id;
-
+    req.userID = userData.google_id;
+    req.user = {google_id: userData.google_id, email: userData.email, name: userData.name, picture: userData.picture};
+    
 
     next();
     console.log(

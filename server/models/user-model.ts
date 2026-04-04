@@ -1,6 +1,7 @@
 import { model, Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { IUser } from "../types/user-type";
 
 // const DeployedRepoSchema = new Schema({
 //     repo_url: {
@@ -172,17 +173,43 @@ import jwt from "jsonwebtoken";
 // });
 
 const userSchema = new Schema({
-    username: {
+    google_id: {
         type: String,
         require: true,
-    }
-
+    },
+    email: {
+        type: String,
+        require: true,
+    },
+    name: {
+        type: String,
+        require: true,
+    },
+    picture: {
+        type: String,
+        require: true,
+    },
+    google_oauth: {
+        access_token: {
+            type: String,
+            require: true,
+        },
+        refresh_token: {
+            type: String,
+            require: true,
+        },
+        token_type: {
+            type: String,
+            require: true,
+        },
+        access_token_expires_in: {
+            type: Number,
+            require: true,
+        },
+    },
 })
 
-interface IUser extends Document {
-  username: string;
-  
-}
+
 
 userSchema.methods.generateToken = function () {
     try {
@@ -190,7 +217,7 @@ userSchema.methods.generateToken = function () {
         if (!secret) throw new Error('JWT_SECRET_KEY missing');
         return jwt.sign(
             // { username: this.username, userID: this._id.toString(), userGithubID: this.id, email: this.email || null, isAdmin: this.isAdmin, userAccessTokens: this.access_token, userAccessTokensExpiresIn: this.access_token_expires_in },
-            {username: this.username},
+            {google_id: this.google_id, email: this.email},
             secret,
             { expiresIn: "30d" })
     } catch (error) {
