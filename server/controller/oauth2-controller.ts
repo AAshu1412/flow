@@ -30,8 +30,12 @@ const google_authenticate = async (req: Request, res: Response) => {
 
 const notion_authenticate = async (req: Request, res: Response) => {
     try {
+        // -- ASHU
+        // const userId = req.db_doc_id;
+        // -- ASHU 
+
         
-        const userId = req.db_doc_id;
+
         const url = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_CLIENT_ID}&redirect_uri=${encodeURIComponent("http://localhost:5001/api/auth/notion/callback")}&response_type=code&state=${userId}`;
     res.redirect(url);
     }
@@ -40,4 +44,22 @@ const notion_authenticate = async (req: Request, res: Response) => {
     }
 }
 
-export default { google_authenticate, notion_authenticate };
+const discord_authenticate = async (req: Request, res: Response) => {
+    try {
+        
+        // -- ASHU
+        // const userId = req.db_doc_id;
+        // -- ASHU 
+
+        
+
+        const url = `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent("http://localhost:5001/api/auth/discord/callback")}&response_type=code&state=${userId}&scope=identify%20guilds%20email`;
+    res.redirect(url);
+    }
+    catch (error: any) {
+        res.status(500).send({ status_response: 500, error: error.message });
+    }
+}
+
+
+export default { google_authenticate, notion_authenticate, discord_authenticate };

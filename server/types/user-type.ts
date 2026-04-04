@@ -12,6 +12,7 @@ export interface IGoogleConnection extends Document {
     access_token: string;
     refresh_token: string;
     token_type: string;
+    scope: string;
     access_token_expires_in: number;
     id_token: string;
     createdAt: Date;
@@ -27,6 +28,7 @@ export interface INotionConnection extends Document {
     access_token: string;
     refresh_token: string;
     token_type: string;
+    scope: string;
     name?: string;
     email?: string;
     createdAt: Date;
@@ -39,6 +41,7 @@ export interface IDiscordConnection extends Document {
     username: string;
     access_token: string;
     refresh_token: string;
+    scope: string;
     access_token_expires_in: number;
     guild_id?: string;
     createdAt: Date;
@@ -53,6 +56,7 @@ export interface ITelegramConnection extends Document {
     auth_date: number;
     bot_token?: string;
     chat_id?: string;
+    scope: string;
     createdAt: Date;
     updatedAt: Date;
 }

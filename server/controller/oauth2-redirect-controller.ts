@@ -74,6 +74,7 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
                 googleConn.refresh_token = tokenData.refresh_token || googleConn.refresh_token;
                 googleConn.access_token_expires_in = absoluteExpiryTime;
                 googleConn.id_token = tokenData.id_token || googleConn.id_token;
+                googleConn.scope = tokenData.scope || googleConn.scope;
                 await googleConn.save();
             } else {
                 // CREATE new connection
@@ -85,6 +86,7 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
                     refresh_token: tokenData.refresh_token,
                     token_type: tokenData.token_type,
                     access_token_expires_in: absoluteExpiryTime,
+                    scope: tokenData.scope,
                     id_token: tokenData.id_token,
                 });
 
@@ -146,6 +148,19 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
             return res.status(400).send('Failed to get token: ' + tokenData.error_description);
         }
 
+        const tokenStatusResponse = await fetch('https://api.notion.com/v1/oauth/introspect', {
+            method: 'POST',
+            headers: {
+                'Notion-Version': '2026-03-11',
+                'Content-Type': 'application/json',
+                Authorization: `Basic ${encoded}`,
+            },
+            body: JSON.stringify({ token: tokenData.access_token })
+        });
+
+        const tokenStatus = await tokenStatusResponse.json();
+
+
         // The human owner's data is inside tokenData, NOT the /users/me endpoint (which is the bot)
         const notionOwner = tokenData.owner?.user;
 
@@ -167,6 +182,7 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
             notionConn.refresh_token = tokenData.refresh_token || notionConn.refresh_token; // Notion usually omits this
             notionConn.bot_id = tokenData.bot_id;
             notionConn.workspace_name = tokenData.workspace_name;
+            notionConn.scope = tokenStatus.scope;
             await notionConn.save();
         } else {
             // CREATE: The user is authorizing a brand new workspace.
@@ -179,6 +195,7 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
                 access_token: tokenData.access_token,
                 refresh_token: tokenData.refresh_token || "no_refresh_token",
                 token_type: tokenData.token_type || "bearer",
+                scope: tokenStatus.scope,
                 name: notionOwner?.name,
                 email: notionOwner?.person?.email
             });
@@ -188,12 +205,14 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
             await userInDB.save();
         }
 
+
         // 5. Success! Redirect the user back to your frontend dashboard
         // res.redirect("http://localhost:5173/dashboard?integration=notion_success");
 
         res.json({
             message: "Successfully logged in notion!",
             tokens: tokenData,
+            tokenStatus: tokenStatus
         });
 
     } catch (error) {
@@ -202,4 +221,63 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
     }
 }
 
-export default { google_authenticate_callback, notion_authenticate_callback };
+
+const discord_authenticate_callback = async (req: Request, res: Response) => {
+
+const code = req.query.code as string;
+    const userId = req.query.state as string;
+    console.log("Notion Callback code: " + code);
+    console.log("Notion Callback userId: " + userId);
+    if (!code) {
+        return res.status(400).send('No code provided');
+    }
+    if (!userId) return res.status(400).send('No user ID state provided');
+
+
+
+    try {
+        
+         const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                client_id: process.env.DISCORD_CLIENT_ID as string,
+                client_secret: process.env.DISCORD_CLIENT_SECRET as string,
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: "http://localhost:5001/api/auth/discord/callback"
+            })
+        });
+
+        const tokenData = await tokenResponse.json();
+
+        if (tokenData.error) {
+            return res.status(400).send('Failed to get token: ' + tokenData.error_description);
+        }
+
+        const userResponse = await fetch('https://discord.com/api/users/@me', {
+            headers: {
+                authorization: `${tokenData.token_type} ${tokenData.access_token}`
+            }
+        });
+
+        const userData = await userResponse.json();
+
+
+        
+ res.json({
+                message: "Successfully logged in discord!",
+                user: userData,
+                tokens: tokenData,
+            });
+
+    } catch (error) {
+        console.error('Error during OAuth flow:', error);
+        res.status(500).send('Internal Server Error');
+    }
+
+}
+
+export default { google_authenticate_callback, notion_authenticate_callback, discord_authenticate_callback };

@@ -98,6 +98,7 @@ const googleSchema = new Schema({
     access_token: { type: String, required: true },
     refresh_token: { type: String, required: true },
     token_type: { type: String, required: true },
+    scope: { type: String, required: true },
     access_token_expires_in: { type: Number, required: true }, // Absolute timestamp
     id_token: { type: String, required: true },
 }, { timestamps: true });
@@ -111,6 +112,7 @@ const notionSchema = new Schema({
     access_token: { type: String, required: true },
     refresh_token: { type: String, required: true }, // Notion rarely uses this
     token_type: { type: String, required: true },
+    scope: { type: String, required: true },
     name: { type: String, required: false },
     email: { type: String, required: false },
 }, { timestamps: true });
@@ -119,6 +121,7 @@ const discordSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     discord_user_id: { type: String, required: true },
     username: { type: String, required: true },
+    scope: { type: String, required: true },
     access_token: { type: String, required: true },
     refresh_token: { type: String, required: true },
     access_token_expires_in: { type: Number, required: true }, // Absolute timestamp
@@ -130,6 +133,7 @@ const telegramSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     telegram_id: { type: String, required: true },
     username: { type: String, required: false },
+    scope: { type: String, required: true },
     first_name: { type: String, required: true },
     auth_date: { type: Number, required: true },
     // If you are storing a bot token for the automation to send messages:
