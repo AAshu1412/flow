@@ -17,5 +17,6 @@ passport.use(new Strategy({
     console.log("Google Strategy: "+JSON.stringify(accessToken));
     console.log("Google Strategy: "+JSON.stringify(refreshToken));
     console.log("Google Strategy: "+JSON.stringify(cb));
+    return cb(null, profile); 
   }
 ));
