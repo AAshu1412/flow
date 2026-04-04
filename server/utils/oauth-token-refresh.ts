@@ -1,6 +1,5 @@
 import { Types } from "mongoose";
 import { DiscordConnection, GoogleConnection, NotionConnection, User } from "../models/user-model";
-import { IUser } from "../types/user-type";
 
 
 export const getValidGoogleAccessToken = async (userId: string | Types.ObjectId, connectionEmail: string): Promise<string | null> => {
