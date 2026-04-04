@@ -1,16 +1,16 @@
 import { Types } from "mongoose";
-import {GoogleConnection, NotionConnection, User} from "../models/user-model";
+import { DiscordConnection, GoogleConnection, NotionConnection, User } from "../models/user-model";
 import { IUser } from "../types/user-type";
 
 
 export const getValidGoogleAccessToken = async (userId: string | Types.ObjectId, connectionEmail: string): Promise<string | null> => {
-    
+
     // 1. Query the separate Google collection using BOTH userId and email
-    const googleConn = await GoogleConnection.findOne({ 
-        userId: userId, 
-        email: connectionEmail 
+    const googleConn = await GoogleConnection.findOne({
+        userId: userId,
+        email: connectionEmail
     });
-    
+
     if (!googleConn || !googleConn.access_token) {
         throw new Error(`Google account ${connectionEmail} is not connected.`);
     }
@@ -60,13 +60,13 @@ export const getValidGoogleAccessToken = async (userId: string | Types.ObjectId,
     }
 };
 
-export const getValidNotionToken = async (userId:  string | Types.ObjectId, workspaceId: string): Promise<string | null> => {
+export const getValidNotionToken = async (userId: string | Types.ObjectId, workspaceId: string): Promise<string | null> => {
     // 1. Query the dedicated Notion collection using BOTH user and workspace IDs
-    const notionConn = await NotionConnection.findOne({ 
-        userId: userId, 
-        workspace_id: workspaceId 
+    const notionConn = await NotionConnection.findOne({
+        userId: userId,
+        workspace_id: workspaceId
     });
-    
+
     if (!notionConn || !notionConn.access_token) {
         throw new Error("Notion workspace is not connected to this user.");
     }
@@ -111,19 +111,19 @@ export const getValidNotionToken = async (userId:  string | Types.ObjectId, work
         const refreshData = await refreshResponse.json();
 
         if (refreshData.error) {
-             throw new Error("Refresh token invalid. User must re-authorize this workspace.");
+            throw new Error("Refresh token invalid. User must re-authorize this workspace.");
         }
 
         // 5. Update the specific Connection document with the new tokens
         notionConn.access_token = refreshData.access_token;
-        
+
         // Notion might not return a new refresh token every time, so keep the old one if missing
         if (refreshData.refresh_token) {
             notionConn.refresh_token = refreshData.refresh_token;
         }
 
         await notionConn.save();
-        
+
         return notionConn.access_token;
 
     } catch (error) {
@@ -131,3 +131,66 @@ export const getValidNotionToken = async (userId:  string | Types.ObjectId, work
         return null;
     }
 };
+
+
+export const getValidDiscordToken = async (userId: string | Types.ObjectId, discordUserId: string): Promise<string | null> => {
+    
+    // 1. Find the exact Discord connection for this user
+    const discordConn = await DiscordConnection.findOne({
+        userId: userId,
+        discord_user_id: discordUserId
+    });
+
+    if (!discordConn || !discordConn.access_token) {
+        throw new Error(`Discord account ${discordUserId} is not connected.`);
+    }
+
+    const now = Date.now();
+    // 2. Add a 1-minute buffer (60000ms) to prevent expiring mid-request
+    const isExpired = now >= (discordConn.access_token_expires_in - 60000);
+
+    if (!isExpired) {
+        // Token is still active! Return it immediately.
+        return discordConn.access_token;
+    }
+
+    console.log(`Discord Access token expired for ${discordConn.username}. Refreshing silently...`);
+
+    try {
+        // 3. Request a new token from Discord
+        const response = await fetch('https://discord.com/api/oauth2/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                client_id: process.env.DISCORD_CLIENT_ID as string,
+                client_secret: process.env.DISCORD_CLIENT_SECRET as string,
+                grant_type: 'refresh_token',
+                refresh_token: discordConn.refresh_token 
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            console.error("Failed to refresh Discord token:", data);
+            throw new Error("Refresh token invalid or revoked. User must re-authenticate.");
+        }
+
+        // 4. Update the database with the fresh credentials
+        discordConn.access_token = data.access_token;
+        discordConn.access_token_expires_in = Date.now() + (data.expires_in * 1000);
+        
+        // Discord usually sends a new refresh token, but we fallback to the old one just in case
+        discordConn.refresh_token = data.refresh_token || discordConn.refresh_token;
+        discordConn.scope = data.scope || discordConn.scope;
+
+        await discordConn.save();
+
+        return discordConn.access_token;
+
+    } catch (error) {
+        console.error("Error refreshing Discord token:", error);
+        return null;
+    }
+};
+

@@ -173,7 +173,7 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
         // 4. Look for an existing Notion Connection for THIS user and THIS workspace
         let notionConn = await NotionConnection.findOne({
             userId: userInDB._id,
-            workspace_id: tokenData.workspace_id    
+            workspace_id: tokenData.workspace_id
         });
 
         if (notionConn) {
@@ -224,10 +224,10 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
 
 const discord_authenticate_callback = async (req: Request, res: Response) => {
 
-const code = req.query.code as string;
+    const code = req.query.code as string;
     const userId = req.query.state as string;
-    console.log("Notion Callback code: " + code);
-    console.log("Notion Callback userId: " + userId);
+    console.log("Discord Callback code: " + code);
+    console.log("Discord Callback userId: " + userId);
     if (!code) {
         return res.status(400).send('No code provided');
     }
@@ -236,8 +236,8 @@ const code = req.query.code as string;
 
 
     try {
-        
-         const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
+
+        const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -266,20 +266,20 @@ const code = req.query.code as string;
         const userData = await userResponse.json();
 
 
- 
 
-        if (userData && tokenData ) {
+
+        if (userData && tokenData) {
             const absoluteExpiryTime = Date.now() + (tokenData.expires_in * 1000);
 
-  const userInDB = await User.findById(userId);
-        if (!userInDB) {
-            return res.status(404).send('User not found in database');
-        }
+            const userInDB = await User.findById(userId);
+            if (!userInDB) {
+                return res.status(404).send('User not found in database');
+            }
 
-        let discordConn = await DiscordConnection.findOne({
-            userId: userInDB._id,
-            discord_user_id: userData.id    
-        });
+            let discordConn = await DiscordConnection.findOne({
+                userId: userInDB._id,
+                discord_user_id: userData.id
+            });
 
             if (discordConn) {
                 // UPDATE existing connection
