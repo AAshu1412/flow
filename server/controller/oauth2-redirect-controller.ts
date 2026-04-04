@@ -124,7 +124,7 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
 
     try {
 
-        const encoded = btoa(`${process.env.NOTION_CLIENT_ID}:${process.env.NOTION_CLIENT_SECRET}`);
+        const encoded = Buffer.from(`${process.env.NOTION_CLIENT_ID}:${process.env.NOTION_CLIENT_SECRET}`).toString('base64');
 
         // 3. Exchange the code for an Access Token
         const tokenResponse = await fetch('https://api.notion.com/v1/oauth/token', {
