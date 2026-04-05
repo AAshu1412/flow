@@ -48,7 +48,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
         },
         inputs: [], // The API allows creating an empty space without inputs
         execute: async function (evaluatedInputs, environment) {
-            const accessToken = environment.googleMeetAccessToken;
+            const accessToken = environment.access_token;
 
             const response = await fetch('https://meet.googleapis.com/v2/spaces', {
                 method: 'POST',
@@ -88,7 +88,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { spaceId } = evaluatedInputs;
-            const accessToken = environment.googleMeetAccessToken;
+            const accessToken = environment.access_token;
 
             // The API expects the format to be prefixed with 'spaces/'
             const formattedSpaceName = spaceId.startsWith('spaces/') ? spaceId : `spaces/${spaceId}`;
@@ -129,7 +129,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { conferenceRecordId } = evaluatedInputs;
-            const accessToken = environment.googleMeetAccessToken;
+            const accessToken = environment.access_token;
 
             const formattedRecord = conferenceRecordId.startsWith('conferenceRecords/') 
                 ? conferenceRecordId 
@@ -171,7 +171,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { conferenceRecordId } = evaluatedInputs;
-            const accessToken = environment.googleMeetAccessToken;
+            const accessToken = environment.access_token;
 
             const formattedRecord = conferenceRecordId.startsWith('conferenceRecords/') 
                 ? conferenceRecordId 
@@ -213,7 +213,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { transcriptName } = evaluatedInputs;
-            const accessToken = environment.googleMeetAccessToken;
+            const accessToken = environment.access_token;
 
             // Note: The input must be the full 'name' returned from the List Transcripts node
             const response = await fetch(`https://meet.googleapis.com/v2/${transcriptName}/entries?pageSize=100`, {

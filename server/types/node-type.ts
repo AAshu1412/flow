@@ -53,7 +53,7 @@ export interface NodeDefinition {
      * @param evaluatedInputs The final values after the expression engine parses them.
      * @param environment Contains tokens and API keys (e.g., { gmailAccessToken: "..." })
      */
-    execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
+    execute: (evaluatedInputs: Record<string, any>, environment: {access_token?:string, apiKey?:string}) => Promise<any>;
 }
 
 
@@ -62,3 +62,14 @@ export interface BackendNodeProfile extends NodeDefinition {
     getToken?: (userId: string | Types.ObjectId, connectionEmail: string) => Promise<string | null>; 
 }
 
+
+export interface AvailableAccount {
+    connectionId: string;
+    label: string;      // What the user sees (e.g., "ashu@gmail.com")
+    identifier: string; // What the backend needs (e.g., the email or workspace_id)
+}
+
+export interface FrontendNodeProfile extends Omit<NodeDefinition, 'execute'> {
+    templateId: string;
+    availableAccounts: AvailableAccount[];
+}

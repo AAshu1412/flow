@@ -57,7 +57,7 @@ export const googleFormsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { formId } = evaluatedInputs;
-            const accessToken = environment.googleFormsAccessToken;
+            const accessToken = environment.access_token;
 
             // This endpoint gets all responses. In a production "Trigger" node, 
             // your engine would poll this and keep track of the most recent response ID 
@@ -100,7 +100,7 @@ export const googleFormsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { formId } = evaluatedInputs;
-            const accessToken = environment.googleFormsAccessToken;
+            const accessToken = environment.access_token;
 
             const url = `https://forms.googleapis.com/v1/forms/${formId}`;
 
@@ -148,7 +148,7 @@ export const googleFormsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { title, documentTitle } = evaluatedInputs;
-            const accessToken = environment.googleFormsAccessToken;
+            const accessToken = environment.access_token;
 
             // Construct the payload. The API expects an 'info' object containing the title.
             const requestBody: any = {
@@ -220,7 +220,7 @@ export const googleFormsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { formId, questionText, questionType, choices } = evaluatedInputs;
-            const accessToken = environment.googleFormsAccessToken;
+            const accessToken = environment.access_token;
 
             // 1. Initialize the base 'createItem' request structure
             let itemDef: any = {

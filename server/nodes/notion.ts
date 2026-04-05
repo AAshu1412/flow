@@ -68,7 +68,7 @@ export const notionNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { query, filterType } = evaluatedInputs;
-            const accessToken = environment.notionAccessToken;
+            const accessToken = environment.access_token;
 
             const requestBody: any = {};
             if (query) requestBody.query = query;
@@ -132,7 +132,7 @@ export const notionNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { parentPageId, title, markdownContent } = evaluatedInputs;
-            const accessToken = environment.notionAccessToken;
+            const accessToken = environment.access_token;
 
             const requestBody: any = {
                 parent: { 
@@ -209,7 +209,7 @@ export const notionNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { databaseId, titlePropertyName, itemTitle, additionalPropertiesJson } = evaluatedInputs;
-            const accessToken = environment.notionAccessToken;
+            const accessToken = environment.access_token;
 
             // Initialize the required Title property
             let propertiesObj: any = {

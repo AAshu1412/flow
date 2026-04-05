@@ -75,7 +75,7 @@ export const gmailNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { to, subject, bodyText } = evaluatedInputs;
-            const accessToken = environment.gmailAccessToken;
+            const accessToken = environment.access_token;
 
             const mimeMessage = `To: ${to}\r\nSubject: ${subject}\r\nContent-Type: text/plain; charset="UTF-8"\r\n\r\n${bodyText}`;
             const rawEncodedMessage = encodeBase64Url(mimeMessage);
@@ -109,7 +109,7 @@ export const gmailNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { threadId } = evaluatedInputs;
-            const accessToken = environment.gmailAccessToken;
+            const accessToken = environment.access_token;
 
             const response = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}`, {
                 method: 'GET',
@@ -174,7 +174,7 @@ export const gmailNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { q, maxResults, labelIds, includeSpamTrash, pageToken } = evaluatedInputs;
-            const accessToken = environment.gmailAccessToken;
+            const accessToken = environment.access_token;
 
             // 1. Initialize the base URL
             const url = new URL('https://gmail.googleapis.com/gmail/v1/users/me/threads');

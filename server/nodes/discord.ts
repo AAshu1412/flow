@@ -51,7 +51,7 @@ export const discordNodes: Record<string, NodeDefinition> = {
         },
         inputs: [], // No inputs required to list current user's guilds
         execute: async function (evaluatedInputs, environment) {
-            const accessToken = environment.discordAccessToken;
+            const accessToken = environment.access_token;
 
             // Note: Depending on your OAuth setup, this might be 'Bearer <token>' for users
             // or 'Bot <token>' if you are operating strictly via a bot application token.
@@ -91,7 +91,7 @@ export const discordNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { guildId } = evaluatedInputs;
-            const accessToken = environment.discordAccessToken;
+            const accessToken = environment.access_token;
 
             const response = await fetch(`${DISCORD_API_BASE}/guilds/${guildId}/channels`, {
                 method: 'GET',
@@ -136,7 +136,7 @@ export const discordNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { channelId, content } = evaluatedInputs;
-            const accessToken = environment.discordAccessToken;
+            const accessToken = environment.access_token;
 
             const requestBody = {
                 content: content

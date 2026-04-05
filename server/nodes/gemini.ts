@@ -45,7 +45,7 @@ export const geminiNodes: Record<string, NodeDefinition> = {
         execute: async function (evaluatedInputs, environment) {
             // The frontend passes the 'value' from the dropdown (e.g., "gemini-1.5-flash")
             const { model, prompt } = evaluatedInputs;
-            const apiKey = environment.geminiApiKey;
+            const apiKey = environment.apiKey || null;
 
             const requestBody = {
                 contents: [
@@ -56,7 +56,7 @@ export const geminiNodes: Record<string, NodeDefinition> = {
             };
 
             // The selected model is injected into the URL dynamically
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
             const response = await fetch(url, {
                 method: 'POST',

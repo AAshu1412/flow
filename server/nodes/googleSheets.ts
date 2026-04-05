@@ -71,7 +71,7 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { spreadsheetId, range, values } = evaluatedInputs;
-            const accessToken = environment.googleSheetsAccessToken;
+            const accessToken = environment.access_token;
 
             // Google Sheets expects a 2D array for values: [ [col1, col2, col3] ]
             // We split the comma-separated string from the user into a proper array.
@@ -126,7 +126,7 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { spreadsheetId, range } = evaluatedInputs;
-            const accessToken = environment.googleSheetsAccessToken;
+            const accessToken = environment.access_token;
 
             const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}`;
 
@@ -167,7 +167,7 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { spreadsheetId } = evaluatedInputs;
-            const accessToken = environment.googleSheetsAccessToken;
+            const accessToken = environment.access_token;
 
             // Adding ?includeGridData=false ensures we only get the lightweight metadata 
             // (like tab names) and don't accidentally download gigabytes of cell data.

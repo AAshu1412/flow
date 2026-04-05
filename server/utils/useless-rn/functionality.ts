@@ -1,14 +1,20 @@
-import { GodNode, ServiceNode, GeneralNode, LLMNode, AnyNode, NodePayload, ExecutionResult } from "../../types/functionality-type";
-import god_node from "../../nodes/god_node.json";
+import { NodePayload, ExecutionResult } from "../../types/functionality-type";
+// import god_node from "../../nodes/god_node.json";
+import { SERVICE_OPERATIONS } from "../../constants";
+import { AnyOperation, AvailableAccount, BackendNodeProfile, FrontendNodeProfile, ServiceName } from "../../types/node-type";
+import { Types } from "mongoose";
+import { GoogleConnection, NotionConnection, DiscordConnection } from "../../models/user-model";
+import { getValidGoogleAccessToken, getValidNotionToken, getValidDiscordToken } from "../oauth-token-refresh";
 
-const service_mapping = async (service:string, operation:string): Promise<AnyNode | null> => {
-    if (service === "god_node") {
-        if (operation === "generic_http") {
-            return god_node.generic_http;
-        }
-    }
-    return null;
-}
+
+// const service_mapping = async (service:string, operation:string): Promise<AnyNode | null> => {
+//     if (service === "god_node") {
+//         if (operation === "generic_http") {
+//             return god_node.generic_http;
+//         }
+//     }
+//     return null;
+// }
 
 
 const api_execution = async (service: string, operation: string, nodePayload: NodePayload): Promise<ExecutionResult | null> => {
@@ -85,4 +91,5 @@ const api_execution = async (service: string, operation: string, nodePayload: No
 };
 
 
-export { service_mapping, api_execution };
+
+

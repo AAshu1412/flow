@@ -57,7 +57,7 @@ export const googleDocsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { title } = evaluatedInputs;
-            const accessToken = environment.googleDocsAccessToken;
+            const accessToken = environment.access_token;
 
             const response = await fetch('https://docs.googleapis.com/v1/documents', {
                 method: 'POST',
@@ -103,7 +103,7 @@ export const googleDocsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { documentId, textToAppend } = evaluatedInputs;
-            const accessToken = environment.googleDocsAccessToken;
+            const accessToken = environment.access_token;
 
             // Google Docs requires a batchUpdate request to modify content.
             // We use 'endOfSegmentLocation' with an empty segmentId to target the end of the main body.
@@ -155,7 +155,7 @@ export const googleDocsNodes: Record<string, NodeDefinition> = {
         ],
         execute: async function (evaluatedInputs, environment) {
             const { documentId } = evaluatedInputs;
-            const accessToken = environment.googleDocsAccessToken;
+            const accessToken = environment.access_token;
 
             const response = await fetch(`https://docs.googleapis.com/v1/documents/${documentId}`, {
                 method: 'GET',

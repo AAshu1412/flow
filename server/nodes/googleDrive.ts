@@ -56,7 +56,7 @@ export const googleDriveNodes: Record<string, NodeDefinition> = {
             const { searchQuery, fileType, pageSize } = evaluatedInputs;
             
             // IMPORTANT: This node requires a Google Drive scope/token, not Docs!
-            const accessToken = environment.googleDriveAccessToken; 
+            const accessToken = environment.access_token; 
 
             const url = new URL('https://www.googleapis.com/drive/v3/files');
 
