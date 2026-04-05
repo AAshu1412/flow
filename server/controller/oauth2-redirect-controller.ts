@@ -269,6 +269,10 @@ const discord_authenticate_callback = async (req: Request, res: Response) => {
 
 
         if (userData && tokenData) {
+             if (!tokenData.guild) {
+                return res.status(400).send('No server selected. Please authorize the bot for a specific server.');
+            }
+
             const absoluteExpiryTime = Date.now() + (tokenData.expires_in * 1000);
 
             const userInDB = await User.findById(userId);
@@ -278,7 +282,7 @@ const discord_authenticate_callback = async (req: Request, res: Response) => {
 
             let discordConn = await DiscordConnection.findOne({
                 userId: userInDB._id,
-                discord_user_id: userData.id
+                guild_id: tokenData.guild.id 
             });
 
             if (discordConn) {
@@ -287,6 +291,14 @@ const discord_authenticate_callback = async (req: Request, res: Response) => {
                 discordConn.refresh_token = tokenData.refresh_token || discordConn.refresh_token;
                 discordConn.access_token_expires_in = absoluteExpiryTime;
                 discordConn.scope = tokenData.scope || discordConn.scope;
+                
+                // Update user details just in case they changed their Discord username
+                discordConn.discord_user_id = userData.id;
+                discordConn.username = userData.username;
+                discordConn.global_name = userData.global_name;
+                discordConn.email = userData.email;
+                discordConn.guild_name = tokenData.guild.name;
+                discordConn.guild_icon = tokenData.guild.icon;
                 await discordConn.save();
             } else {
                 // CREATE new connection
@@ -301,6 +313,9 @@ const discord_authenticate_callback = async (req: Request, res: Response) => {
                     token_type: tokenData.token_type,
                     access_token_expires_in: absoluteExpiryTime,
                     scope: tokenData.scope,
+                    guild_id: tokenData.guild.id,       // <-- Save Guild Data
+                    guild_name: tokenData.guild.name,   // <-- Save Guild Data
+                    guild_icon: tokenData.guild.icon    // <-- Save Guild Data
                 });
 
                 // LINK it to the User's array!

@@ -132,18 +132,18 @@ export const getValidNotionToken = async (userId: string | Types.ObjectId, works
 };
 
 
-export const getValidDiscordToken = async (userId: string | Types.ObjectId, discordUserId: string): Promise<string | null> => {
+export const getValidDiscordToken = async (userId: string | Types.ObjectId, guildId: string): Promise<string | null> => {
     
     // 1. Find the exact Discord connection for this user
     const discordConn = await DiscordConnection.findOne({
         userId: userId,
-        discord_user_id: discordUserId
+        guild_id: guildId
     });
 
+    
     if (!discordConn || !discordConn.access_token) {
-        throw new Error(`Discord account ${discordUserId} is not connected.`);
+        throw new Error(`Discord server connection ${guildId} is not connected or missing token.`);
     }
-
     const now = Date.now();
     // 2. Add a 1-minute buffer (60000ms) to prevent expiring mid-request
     const isExpired = now >= (discordConn.access_token_expires_in - 60000);
