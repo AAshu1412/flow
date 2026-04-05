@@ -1,5 +1,5 @@
-import { GodNode, ServiceNode, GeneralNode, LLMNode, AnyNode, NodePayload, ExecutionResult } from "../types/functionality-type";
-import god_node from "../nodes/god_node.json";
+import { GodNode, ServiceNode, GeneralNode, LLMNode, AnyNode, NodePayload, ExecutionResult } from "../../types/functionality-type";
+import god_node from "../../nodes/god_node.json";
 
 const service_mapping = async (service:string, operation:string): Promise<AnyNode | null> => {
     if (service === "god_node") {

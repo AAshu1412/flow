@@ -1,5 +1,5 @@
-import {User} from "../models/user-model";
-import { Provider } from "../types/user-type";
+import {User} from "../../models/user-model";
+import { Provider } from "../../types/node-type";
 
 const getUserWithAllConnections = async (userId: string) => {
     try {

@@ -7,7 +7,7 @@ import oauth2Router from "./router/oauth2-router";
 import oauth2RedirectRouter from "./router/oauth2-redirect-router";
 import node_test_router from "./router/node_test-router";
 import { FRONTEND_URLS } from "./constants";
-import connectDb from "./utils/db";
+import connectDb from "./utils/db/db";
 import errorMiddleWare from "./middlewares/error-middleware";
 
 

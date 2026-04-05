@@ -11,6 +11,7 @@ import {coreNodes} from "./general_node";
 import { AnyOperation, BackendNodeProfile, ServiceName } from "../types/node-type";
 import {SERVICE_OPERATIONS, GOOGLE_SERVICES} from "../constants";
 import { getValidGoogleAccessToken, getValidNotionToken, getValidDiscordToken } from "../utils/oauth-token-refresh";
+import { Types } from "mongoose";
 
 
 const allNodesRegistry = {
@@ -50,7 +51,6 @@ export function getNodeProfileForFrontend(service: string, operation: string) {
 }
 
 export function getNodeProfileForBackendProcessing(service: string, operation: string): BackendNodeProfile {
-    // 1. Find the node in your registry that matches the service and operation
     const targetNodeKey = Object.keys(allNodesRegistry).find(
         key => allNodesRegistry[key].service === service && allNodesRegistry[key].operation === operation
     );
@@ -61,8 +61,7 @@ export function getNodeProfileForBackendProcessing(service: string, operation: s
 
     const nodeDef = allNodesRegistry[targetNodeKey];
 
-    // 2. Determine which token fetcher to attach based on the service
-    let tokenFetcher: ((userId: string) => Promise<string>) | undefined = undefined;
+    let tokenFetcher: ((userId: string | Types.ObjectId, connectionEmail: string) => Promise<string | null>) | undefined = undefined;
 
     if (service === 'gmail' || service.startsWith('google_')) {
         // Covers gmail, google_docs, google_sheets, google_drive, etc.
@@ -72,9 +71,7 @@ export function getNodeProfileForBackendProcessing(service: string, operation: s
     } else if (service === 'discord') {
         tokenFetcher = getValidDiscordToken;
     } 
-    // If service is 'core' or 'gemini', tokenFetcher safely remains undefined.
-
-    // 3. Return the full backend-ready profile
+  
     return {
         templateId: targetNodeKey, 
         service: nodeDef.service as ServiceName,
@@ -82,7 +79,7 @@ export function getNodeProfileForBackendProcessing(service: string, operation: s
         ui: nodeDef.ui,
         inputs: nodeDef.inputs,
         execute: nodeDef.execute,
-        getToken: tokenFetcher // Inject the correct function here!
+        getToken: tokenFetcher 
     };
 }
 

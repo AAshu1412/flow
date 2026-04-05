@@ -4,7 +4,7 @@
   "operation": "fetch_user_repos",
   
   "ui": {
-    "type": "custom/apiNode",       // For React Flow custom node rendering
+    "type": "custom/apiNode",       
     "label": "Fetch User Repos",
     "description": "Retrieves a list of public repositories for a specified GitHub user.",
     "icon": "github-logo-url" 
@@ -13,7 +13,7 @@
   "execution": {
     "method": "GET",
     "endpoint": "https://api.github.com/users/{{username}}/repos",
-    "requiresAuthentication": true, // Tells the UI to render the "Select Credential" dropdown
+    "requiresAuthentication": true, 
     
     "inputs": {
       "pathVariables": [
@@ -25,8 +25,8 @@
         }
       ],
       "headersParameters": [],
-      "queryParameters": [], // e.g., ?sort=updated
-      "bodyParameters": []   // Empty for this GET request
+      "queryParameters": [],
+      "bodyParameters": []  
     },
     
     "staticHeaders": [
