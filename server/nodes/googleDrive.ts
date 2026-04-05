@@ -1,12 +1,12 @@
 // nodes/googleDrive.ts
-
-export interface NodeDefinition {
-    service: string;
-    operation: string;
-    ui: any;
-    inputs: any[];
-    execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
-}
+import { NodeDefinition } from "../types/node-type";
+// export interface NodeDefinition {
+//     service: string;
+//     operation: string;
+//     ui: any;
+//     inputs: any[];
+//     execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
+// }
 
 async function handleDriveApiError(response: Response): Promise<Response> {
     if (!response.ok) {

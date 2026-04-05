@@ -1,29 +1,29 @@
 // nodes/gmail.ts
-
+import { NodeDefinition } from "../types/node-type";
 // --- Types & Interfaces ---
-export interface NodeInput {
-    key: string;
-    label: string;
-    type: 'string' | 'number' | 'boolean';
-    mandatory: boolean;
-    description?: string;
-}
+// export interface NodeInput {
+//     key: string;
+//     label: string;
+//     type: 'string' | 'number' | 'boolean';
+//     mandatory: boolean;
+//     description?: string;
+// }
 
-export interface NodeUI {
-    type: string;
-    label: string;
-    description: string;
-    icon: string;
-}
+// export interface NodeUI {
+//     type: string;
+//     label: string;
+//     description: string;
+//     icon: string;
+// }
 
-export interface NodeDefinition {
-    service: string;
-    operation: string;
-    ui: NodeUI;
-    inputs: NodeInput[];
-    // EvaluatedInputs is a dictionary of the final values (e.g., { to: "user@test.com" })
-    execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
-}
+// export interface NodeDefinition {
+//     service: string;
+//     operation: string;
+//     ui: NodeUI;
+//     inputs: NodeInput[];
+//     // EvaluatedInputs is a dictionary of the final values (e.g., { to: "user@test.com" })
+//     execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
+// }
 
 // --- Shared Private Helper Functions ---
 function encodeBase64Url(rawString: string): string {

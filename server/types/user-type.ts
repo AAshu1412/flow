@@ -105,7 +105,3 @@ export interface Req {
 }
 
 
-// ----------------------------------------------------
-// Connections Type
-// ----------------------------------------------------
-export type Provider = 'google' | 'notion' | 'discord' | 'telegram';

@@ -1,12 +1,12 @@
 // nodes/gemini.ts
-
-export interface NodeDefinition {
-    service: string;
-    operation: string;
-    ui: any;
-    inputs: any[];
-    execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
-}
+import { NodeDefinition } from "../types/node-type";
+// export interface NodeDefinition {
+//     service: string;
+//     operation: string;
+//     ui: any;
+//     inputs: any[];
+//     execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
+// }
 
 export const geminiNodes: Record<string, NodeDefinition> = {
     "gemini_generate_text_v1": {

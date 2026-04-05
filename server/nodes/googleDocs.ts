@@ -1,28 +1,28 @@
 // nodes/googleDocs.ts
-
+import { NodeDefinition } from "../types/node-type";
 // --- Types & Interfaces (Assuming these are imported from your core engine types) ---
-export interface NodeInput {
-    key: string;
-    label: string;
-    type: 'string' | 'number' | 'boolean';
-    mandatory: boolean;
-    description?: string;
-}
+// export interface NodeInput {
+//     key: string;
+//     label: string;
+//     type: 'string' | 'number' | 'boolean';
+//     mandatory: boolean;
+//     description?: string;
+// }
 
-export interface NodeUI {
-    type: string;
-    label: string;
-    description: string;
-    icon: string;
-}
+// export interface NodeUI {
+//     type: string;
+//     label: string;
+//     description: string;
+//     icon: string;
+// }
 
-export interface NodeDefinition {
-    service: string;
-    operation: string;
-    ui: NodeUI;
-    inputs: NodeInput[];
-    execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
-}
+// export interface NodeDefinition {
+//     service: string;
+//     operation: string;
+//     ui: NodeUI;
+//     inputs: NodeInput[];
+//     execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
+// }
 
 // --- Shared Private Helper Functions ---
 async function handleDocsApiError(response: Response): Promise<Response> {

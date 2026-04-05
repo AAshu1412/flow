@@ -5,6 +5,7 @@ const app=express();
 import authRouter from "./router/auth-router";
 import oauth2Router from "./router/oauth2-router";
 import oauth2RedirectRouter from "./router/oauth2-redirect-router";
+import node_test_router from "./router/node_test-router";
 import { FRONTEND_URLS } from "./constants";
 import connectDb from "./utils/db";
 import errorMiddleWare from "./middlewares/error-middleware";
@@ -35,6 +36,7 @@ app.use(express.json());
 app.use("/api/profile",authRouter);
 app.use("/api/auth",oauth2Router);
 app.use("/api/auth",oauth2RedirectRouter);
+app.use("/api/node_test",node_test_router);
 
 app.use(errorMiddleWare);
 
