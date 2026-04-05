@@ -157,5 +157,30 @@ export const discordNodes: Record<string, NodeDefinition> = {
             // Returns the created message object
             return await response.json();
         }
+    },
+    "discord_get_connections_v1": {
+        service: "discord",
+        operation: "get_connections",
+        ui: {
+            type: "custom/apiNode",
+            label: "Discord - Get Linked Accounts",
+            description: "Retrieves third-party accounts linked to the user's Discord.",
+            icon: "https://img.icons8.com/?size=100&id=30998&format=png&color=000000",
+        },
+        inputs: [], 
+        execute: async function (evaluatedInputs, environment) {
+            const accessToken = environment.access_token;
+
+            const response = await fetch(`${DISCORD_API_BASE}/users/@me/connections`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            await handleDiscordApiError(response);
+            return await response.json(); 
+        }
     }
 };
