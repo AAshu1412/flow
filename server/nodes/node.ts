@@ -1,7 +1,21 @@
 import { gmailNodes } from "./gmail_node";
+import { discordNodes } from "./discord";
+import { notionNodes } from "./notion";
+import {googleSheetsNodes} from "./googleSheets";
+import {googleDocsNodes} from "./googleDocs";
+import {googleDriveNodes} from "./googleDrive";
+import {googleFormsNodes} from "./googleForms";
+import {googleMeetNodes} from "./googleMeet";
 
 const allNodesRegistry = {
     ...gmailNodes,
+    ...discordNodes,
+    ...notionNodes,
+    ...googleSheetsNodes,
+    ...googleDocsNodes,
+    ...googleDriveNodes,
+    ...googleFormsNodes,
+    ...googleMeetNodes,
 };
 
 

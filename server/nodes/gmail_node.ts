@@ -54,7 +54,7 @@ export const gmailNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Gmail - Send Email",
             description: "Sends an email using the authenticated user's account.",
-            icon: "gmail-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=P7UIlhbpWzZm&format=png&color=000000",
         },
         inputs: [
             { key: "to", label: "To", type: "string", mandatory: true },
@@ -90,7 +90,7 @@ export const gmailNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Gmail - Get Thread",
             description: "Retrieves a full email thread by its ID.",
-            icon: "gmail-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=P7UIlhbpWzZm&format=png&color=000000",
         },
         inputs: [
             { key: "threadId", label: "Thread ID", type: "string", mandatory: true, description: "The ID of the thread to retrieve." }
@@ -120,7 +120,7 @@ export const gmailNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Gmail - List Threads",
             description: "Retrieves a list of email threads matching specific search criteria.",
-            icon: "gmail-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=P7UIlhbpWzZm&format=png&color=000000",
         },
         // Notice how 'mandatory' is false for these, as the API allows an empty request to just fetch recent threads.
         inputs: [
