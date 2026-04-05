@@ -27,8 +27,20 @@ export interface NodeDefinition {
 
 // --- Shared Private Helper Functions ---
 function encodeBase64Url(rawString: string): string {
-    return Buffer.from(rawString)
-        .toString('base64')
+    // 1. Convert the string to a UTF-8 byte array
+    const bytes = new TextEncoder().encode(rawString);
+    
+    // 2. Convert the byte array to a binary string
+    let binString = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+        binString += String.fromCharCode(bytes[i]);
+    }
+    
+    // 3. Encode to standard Base64
+    const base64 = btoa(binString);
+    
+    // 4. Convert Standard Base64 to Base64URL format
+    return base64
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
         .replace(/=+$/, '');

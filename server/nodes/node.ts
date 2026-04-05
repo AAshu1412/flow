@@ -6,6 +6,8 @@ import {googleDocsNodes} from "./googleDocs";
 import {googleDriveNodes} from "./googleDrive";
 import {googleFormsNodes} from "./googleForms";
 import {googleMeetNodes} from "./googleMeet";
+import {geminiNodes} from "./gemini";
+import {coreNodes} from "./general_node";
 
 const allNodesRegistry = {
     ...gmailNodes,
@@ -16,6 +18,8 @@ const allNodesRegistry = {
     ...googleDriveNodes,
     ...googleFormsNodes,
     ...googleMeetNodes,
+    ...geminiNodes,
+    ...coreNodes,
 };
 
 
