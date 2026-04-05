@@ -95,7 +95,8 @@ const discord_authenticate = async (req: Request, res: Response) => {
             'identify', // Get basic user info
             'email',    // Get user email
             'guilds',   // Needed for Operation 1: Get the list of servers the user is in
-            'bot'       // CRITICAL for Ops 2 & 3: Forces the user to invite your bot to their server
+            'bot',       // CRITICAL for Ops 2 & 3: Forces the user to invite your bot to their server
+            'connections'
         ];
 
         const scopeString = encodeURIComponent(scopes.join(' '));

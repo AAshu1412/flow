@@ -39,8 +39,8 @@ export async function getNodeProfileForFrontend(service: string, operation: stri
             const connections = await DiscordConnection.find({ userId });
             availableAccounts = connections.map(conn => ({
                 connectionId: conn._id.toString(),
-                label: conn.username, // UI will display "supercoder"
-                identifier: conn.discord_user_id // Your backend Discord token fetcher requires discord_user_id
+                label: conn.guild_name, // UI will display "superdiscord_user_idcoder"
+                identifier: conn.guild_id // Your backend Discord token fetcher requires guild_id
             }));
 
         }

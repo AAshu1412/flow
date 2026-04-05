@@ -35,7 +35,7 @@ const node_test = async (req: Request, res: Response) => {
         } else if (service === 'notion') {
             environment = await NotionConnection.findOne({ userId: userId, workspace_id: selectedAccounts });
         } else if (service === 'discord') {
-            environment = await DiscordConnection.findOne({ userId: userId, discord_user_id: selectedAccounts });
+            environment = await DiscordConnection.findOne({ userId: userId, guild_id: selectedAccounts });
         } 
         // 2. SYSTEM/API KEY SERVICES (No DB lookup needed!)
         else if (service === 'gemini') {
