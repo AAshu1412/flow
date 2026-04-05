@@ -14,7 +14,7 @@ export const SERVICE_OPERATIONS = {
     google_forms: ["list_responses", "get_form_details", "create_form", "add_question"],
     google_meet: ["create_space", "get_space", "list_recordings", "list_transcripts", "list_transcript_entries"],
     google_sheets: ["append_row", "get_rows", "get_info", "create_spreadsheet", "append_column", "get_column"],
-    notion: ["search", "create_page", "create_database_item"]
+    notion: ["search", "create_page", "create_database_item", "create_database", "append_block", "get_database", "get_page","query_database", "get_page_content"]
 } as const;
 
 export const GOOGLE_SERVICES = [
