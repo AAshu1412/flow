@@ -35,7 +35,7 @@ export const coreNodes: Record<string, NodeDefinition> = {
             type: "custom/triggerNode", 
             label: "Manual Input",
             description: "Start the workflow and provide initial starting data.",
-            icon: "input-node-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=45557&format=png&color=000000",
         },
         inputs: [
             { 

@@ -16,7 +16,7 @@ export const geminiNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Gemini - Generate Text",
             description: "Sends a prompt to the Gemini API to generate a text response.",
-            icon: "gemini-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=eoxMN35Z6JKg&format=png&color=000000",
         },
         inputs: [
             { 
