@@ -129,7 +129,9 @@ const discordSchema = new Schema({
     refresh_token: { type: String, required: true },
     access_token_expires_in: { type: Number, required: true }, // Absolute timestamp
     // Optional: If they connected a specific server/guild to a workflow
-    guild_id: { type: String, required: false }, 
+    guild_id: { type: String, required: true }, 
+    guild_name: { type: String, required: true }, // e.g., "Vibe"
+    guild_icon: { type: String, required: false }, // Useful for UI
 }, { timestamps: true });
 
 const telegramSchema = new Schema({

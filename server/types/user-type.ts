@@ -46,7 +46,9 @@ export interface IDiscordConnection extends Document {
     refresh_token: string;
     scope: string;
     access_token_expires_in: number;
-    guild_id?: string;
+    guild_id: string;
+    guild_name: string;
+    guild_icon?: string;
     createdAt: Date;
     updatedAt: Date;
 }
