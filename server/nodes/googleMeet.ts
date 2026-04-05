@@ -44,7 +44,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Meet - Create Space",
             description: "Creates a new meeting space and generates a joinable Meet URL.",
-            icon: "google-meet-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=pE97I4t7Il9M&format=png&color=000000",
         },
         inputs: [], // The API allows creating an empty space without inputs
         execute: async function (evaluatedInputs, environment) {
@@ -75,7 +75,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Meet - Get Space Details",
             description: "Gets space details, including the active Conference Record ID if a meeting is live.",
-            icon: "google-meet-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=pE97I4t7Il9M&format=png&color=000000",
         },
         inputs: [
             { 
@@ -116,7 +116,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Meet - List Recordings",
             description: "Gets the Drive locations of video recordings for a specific conference.",
-            icon: "google-meet-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=pE97I4t7Il9M&format=png&color=000000",
         },
         inputs: [
             { 
@@ -158,7 +158,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Meet - List Transcripts",
             description: "Gets the Google Docs locations of transcripts for a specific conference.",
-            icon: "google-meet-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=pE97I4t7Il9M&format=png&color=000000",
         },
         inputs: [
             { 
@@ -200,7 +200,7 @@ export const googleMeetNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Meet - Get Spoken Transcript",
             description: "Retrieves the actual line-by-line spoken text of a conference transcript.",
-            icon: "google-meet-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=pE97I4t7Il9M&format=png&color=000000",
         },
         inputs: [
             { 

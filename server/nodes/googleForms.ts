@@ -44,7 +44,7 @@ export const googleFormsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Forms - Get Responses",
             description: "Retrieves the submitted responses for a specific form.",
-            icon: "google-forms-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=E4VmOrv6BZqd&format=png&color=000000",
         },
         inputs: [
             { 
@@ -87,7 +87,7 @@ export const googleFormsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Forms - Get Form Details",
             description: "Retrieves the structure and questions of a form.",
-            icon: "google-forms-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=E4VmOrv6BZqd&format=png&color=000000",
         },
         inputs: [
             { 
@@ -128,7 +128,7 @@ export const googleFormsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Forms - Create Form",
             description: "Creates a new, blank Google Form.",
-            icon: "google-forms-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=E4VmOrv6BZqd&format=png&color=000000",
         },
         inputs: [
             { 
@@ -186,7 +186,7 @@ export const googleFormsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Forms - Add Question",
             description: "Adds a new question (Text or Multiple Choice) to an existing form.",
-            icon: "google-forms-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=E4VmOrv6BZqd&format=png&color=000000",
         },
         inputs: [
             { 

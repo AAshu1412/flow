@@ -44,7 +44,7 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Sheets - Append Row",
             description: "Appends a new row of data to the bottom of a sheet.",
-            icon: "google-sheets-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=30461&format=png&color=000000",
         },
         inputs: [
             { 
@@ -106,7 +106,7 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Sheets - Get Rows",
             description: "Retrieves multiple rows of data from a specified range.",
-            icon: "google-sheets-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=30461&format=png&color=000000",
         },
         inputs: [
             { 
@@ -154,7 +154,7 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Sheets - Get Info",
             description: "Retrieves spreadsheet metadata, including the names of all tabs.",
-            icon: "google-sheets-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=30461&format=png&color=000000",
         },
         inputs: [
             { 

@@ -26,7 +26,7 @@ export const googleDriveNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Drive - Search Files",
             description: "Search for files and folders in Google Drive to get their IDs.",
-            icon: "google-drive-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=ya4CrqO7PgnY&format=png&color=000000",
         },
         inputs: [
             { 

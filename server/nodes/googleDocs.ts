@@ -44,7 +44,7 @@ export const googleDocsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Docs - Create Document",
             description: "Creates a new, blank Google Document.",
-            icon: "google-docs-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=30464&format=png&color=000000",
         },
         inputs: [
             { 
@@ -83,7 +83,7 @@ export const googleDocsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Docs - Append Text",
             description: "Appends text to the end of an existing Google Document.",
-            icon: "google-docs-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=30464&format=png&color=000000",
         },
         inputs: [
             { 
@@ -142,7 +142,7 @@ export const googleDocsNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Google Docs - Get Document",
             description: "Retrieves the full structural content of a document.",
-            icon: "google-docs-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=30464&format=png&color=000000",
         },
         inputs: [
             { 

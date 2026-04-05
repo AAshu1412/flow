@@ -48,7 +48,7 @@ export const notionNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Notion - Search",
             description: "Searches for Pages or Databases shared with your integration to get their IDs.",
-            icon: "notion-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=F6H2fsqXKBwH&format=png&color=000000",
         },
         inputs: [
             { 
@@ -105,7 +105,7 @@ export const notionNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Notion - Create Page",
             description: "Creates a new blank page as a child of an existing page.",
-            icon: "notion-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=F6H2fsqXKBwH&format=png&color=000000",
         },
         inputs: [
             { 
@@ -175,7 +175,7 @@ export const notionNodes: Record<string, NodeDefinition> = {
             type: "custom/apiNode",
             label: "Notion - Create Database Item",
             description: "Adds a new item (row) to an existing database.",
-            icon: "notion-logo-url",
+            icon: "https://img.icons8.com/?size=100&id=F6H2fsqXKBwH&format=png&color=000000",
         },
         inputs: [
             { 
