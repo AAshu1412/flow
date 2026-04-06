@@ -99,7 +99,7 @@ const googleSchema = new Schema({
     refresh_token: { type: String, required: true },
     token_type: { type: String, required: true },
     scope: { type: String, required: true },
-    access_token_expires_in: { type: Number, required: true }, // Absolute timestamp
+    access_token_expires_in: { type: Number, required: true }, 
     id_token: { type: String, required: true },
 }, { timestamps: true });
 
@@ -110,7 +110,7 @@ const notionSchema = new Schema({
     workspace_name: { type: String, required: false }, // e.g., "Ashutosh's Notion"
     bot_id: { type: String, required: false },
     access_token: { type: String, required: true },
-    refresh_token: { type: String, required: true }, // Notion rarely uses this
+    refresh_token: { type: String, required: true }, 
     token_type: { type: String, required: true },
     scope: { type: String, required: true },
     name: { type: String, required: false },
@@ -127,11 +127,10 @@ const discordSchema = new Schema({
     access_token: { type: String, required: true },
     token_type: { type: String, required: true },
     refresh_token: { type: String, required: true },
-    access_token_expires_in: { type: Number, required: true }, // Absolute timestamp
-    // Optional: If they connected a specific server/guild to a workflow
+    access_token_expires_in: { type: Number, required: true }, 
     guild_id: { type: String, required: true }, 
     guild_name: { type: String, required: true }, // e.g., "Vibe"
-    guild_icon: { type: String, required: false }, // Useful for UI
+    guild_icon: { type: String, required: false }, 
 }, { timestamps: true });
 
 const telegramSchema = new Schema({
@@ -141,7 +140,6 @@ const telegramSchema = new Schema({
     scope: { type: String, required: true },
     first_name: { type: String, required: true },
     auth_date: { type: Number, required: true },
-    // If you are storing a bot token for the automation to send messages:
     bot_token: { type: String, required: false }, 
     chat_id: { type: String, required: false }
 }, { timestamps: true });
@@ -164,7 +162,6 @@ userSchema.methods.generateToken = function () {
         const secret = process.env.JWT_SECRET_KEY!; 
         if (!secret) throw new Error('JWT_SECRET_KEY missing');
         return jwt.sign(
-            // Keep the JWT payload small and fast!
             { userId: this._id.toString(), email: this.email }, 
             secret,
             { expiresIn: "30d" }

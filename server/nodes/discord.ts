@@ -1,6 +1,4 @@
-// nodes/discord.ts
 import { NodeDefinition } from "../types/node-type";
-// --- Types & Interfaces ---
 // export interface NodeInput {
 //     key: string;
 //     label: string;
@@ -24,7 +22,6 @@ import { NodeDefinition } from "../types/node-type";
 //     execute: (evaluatedInputs: Record<string, any>, environment: Record<string, any>) => Promise<any>;
 // }
 
-// --- Shared Private Helper Functions ---
 async function handleDiscordApiError(response: Response): Promise<Response> {
     if (!response.ok) {
         const errorData = await response.json();
@@ -33,10 +30,8 @@ async function handleDiscordApiError(response: Response): Promise<Response> {
     return response;
 }
 
-// Discord currently uses v10 of their API
 const DISCORD_API_BASE = 'https://discord.com/api/v10';
 
-// --- The Exported Node Operations ---
 export const discordNodes: Record<string, NodeDefinition> = {
 
     // Operation 1: Get Guilds (Servers)
@@ -49,12 +44,11 @@ export const discordNodes: Record<string, NodeDefinition> = {
             description: "Retrieves a list of servers (guilds) the authenticated user or bot is a part of.",
             icon: "https://img.icons8.com/?size=100&id=30998&format=png&color=000000",
         },
-        inputs: [], // No inputs required to list current user's guilds
+        inputs: [],
         execute: async function (evaluatedInputs, environment) {
             const accessToken = environment.access_token;
 
-            // Note: Depending on your OAuth setup, this might be 'Bearer <token>' for users
-            // or 'Bot <token>' if you are operating strictly via a bot application token.
+
             const response = await fetch(`${DISCORD_API_BASE}/users/@me/guilds`, {
                 method: 'GET',
                 headers: {
@@ -65,7 +59,6 @@ export const discordNodes: Record<string, NodeDefinition> = {
 
             await handleDiscordApiError(response);
 
-            // Returns an array of partial guild objects: [ { id: "...", name: "My Server", ... } ]
             return await response.json();
         }
     },
@@ -103,7 +96,6 @@ export const discordNodes: Record<string, NodeDefinition> = {
 
             await handleDiscordApiError(response);
 
-            // Returns an array of channel objects: [ { id: "...", name: "general", type: 0, ... } ]
             return await response.json();
         }
     },
@@ -154,10 +146,10 @@ export const discordNodes: Record<string, NodeDefinition> = {
 
             await handleDiscordApiError(response);
 
-            // Returns the created message object
             return await response.json();
         }
     },
+    // Operation 4: Get Connections
     "discord_get_connections_v1": {
         service: "discord",
         operation: "get_connections",

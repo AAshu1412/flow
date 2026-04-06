@@ -4,7 +4,7 @@ import { WorkflowPayload } from "../types/workflow-type";
 
 export const execute_workflow = async (req: Request, res: Response) => {
     try {
-        const userId = req.db_doc_id; // From your auth middleware
+        const userId = req.db_doc_id; 
         const workflowPayload: WorkflowPayload = req.body;
 
         // Basic payload validation
@@ -12,7 +12,6 @@ export const execute_workflow = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Invalid workflow payload provided." });
         }
 
-        // Send to the Graph Runner!
         const finalEnvelope = await runWorkflowGraph(userId, workflowPayload);
 
         return res.status(200).json({ 

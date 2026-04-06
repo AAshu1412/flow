@@ -19,7 +19,7 @@ import { Request, Response } from "express";
 //         // const userId = req.db_doc_id;
 //         // -- ASHU 
 
-        const userId = "69d26e5f30c712a7db9d2c35";
+//         
 
 //         const url = `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent("http://localhost:5001/api/auth/discord/callback")}&response_type=code&state=${userId}&scope=identify%20guilds%20email`;
 //         res.redirect(url);
@@ -32,7 +32,6 @@ import { Request, Response } from "express";
 
 export const google_authenticate = async (req: Request, res: Response) => {
     try {
-        // 1. Define all required scopes in an array for better readability
         const scopes = [
             'openid',
             'email',
@@ -53,11 +52,9 @@ export const google_authenticate = async (req: Request, res: Response) => {
             'https://www.googleapis.com/auth/spreadsheets'
         ];
 
-        // 2. Join them with a space and encode them for the URL
         const scopeString = encodeURIComponent(scopes.join(' '));
         const redirectUri = encodeURIComponent("http://localhost:5001/api/auth/google/callback");
 
-        // 3. Construct the final URL
         const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&include_granted_scopes=true&state=pass-through%20value&access_type=offline&prompt=consent&scope=${scopeString}`;
         
         res.redirect(url);
@@ -73,7 +70,7 @@ const notion_authenticate = async (req: Request, res: Response) => {
         // const userId = req.db_doc_id;
         // -- ASHU 
 
-        // const userId = "69d26e5f30c712a7db9d2c35";
+        
 
         const url = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_CLIENT_ID}&redirect_uri=${encodeURIComponent("http://localhost:5001/api/auth/notion/callback")}&response_type=code&state=${userId}`;
         res.redirect(url);
@@ -89,7 +86,7 @@ const discord_authenticate = async (req: Request, res: Response) => {
         // const userId = req.db_doc_id;
         // -- ASHU 
 
-        // const userId = "69d26e5f30c712a7db9d2c35";
+        
 
         const scopes = [
             'identify', // Get basic user info

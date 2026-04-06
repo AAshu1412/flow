@@ -10,7 +10,6 @@ const node_test = async (req: Request, res: Response) => {
         const accountId = selectedAccounts || "";
         const nodeInputs = inputs || {};
 
-        // Run the core engine
         const result = await executeSingleNode(userId, service, operation, accountId, nodeInputs);
 
         return res.status(200).json({ result: result });

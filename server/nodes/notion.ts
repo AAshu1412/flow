@@ -517,7 +517,6 @@ export const notionNodes: Record<string, NodeDefinition> = {
 
             let requestBody: any = {};
 
-            // Intelligently parse the filter if the user provided one
             if (filterJson) {
                 try {
                     const parsedFilter = typeof filterJson === 'string' 
@@ -541,7 +540,6 @@ export const notionNodes: Record<string, NodeDefinition> = {
 
             await handleNotionApiError(response);
             
-            // Returns { results: [ { object: "page", properties: { ... } } ] }
             return await response.json();
         }
     },
@@ -569,8 +567,7 @@ export const notionNodes: Record<string, NodeDefinition> = {
             const { pageId } = evaluatedInputs;
             const accessToken = environment.access_token;
 
-            // In Notion, a page is just a block. To get its content, we get its "children".
-            // We use page_size=100 (the max) to grab as much of the page as possible in one request.
+           
             const response = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children?page_size=100`, {
                 method: 'GET',
                 headers: {
@@ -582,7 +579,6 @@ export const notionNodes: Record<string, NodeDefinition> = {
 
             await handleNotionApiError(response);
             
-            // Returns { results: [ { type: "paragraph", paragraph: { rich_text: [...] } } ] }
             return await response.json();
         }
     }

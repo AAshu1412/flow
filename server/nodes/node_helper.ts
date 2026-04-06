@@ -54,7 +54,7 @@ export async function getNodeProfileForFrontend(service: string, operation: stri
         operation: nodeDef.operation,
         ui: nodeDef.ui,
         inputs: nodeDef.inputs,
-        availableAccounts // <-- NEW: Send the fetched accounts to the frontend!
+        availableAccounts 
     };
 }
 
@@ -72,7 +72,6 @@ export function getNodeProfileForBackendProcessing(service: string, operation: s
     let tokenFetcher: ((userId: string | Types.ObjectId, connectionEmail: string) => Promise<string | null>) | undefined = undefined;
 
     if (service === 'gmail' || service.startsWith('google_')) {
-        // Covers gmail, google_docs, google_sheets, google_drive, etc.
         tokenFetcher = getValidGoogleAccessToken;
     } else if (service === 'notion') {
         tokenFetcher = getValidNotionToken;
