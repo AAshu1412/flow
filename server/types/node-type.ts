@@ -23,24 +23,28 @@ export type OperationName<T extends ServiceName> = (typeof SERVICE_OPERATIONS)[T
 export type AnyOperation = (typeof SERVICE_OPERATIONS)[ServiceName][number];
 
 
+// For dropdown menus (like in the Gemini or Notion nodes)
+export interface NodeInputOption {
+    label: string;
+    value: string;
+}
+
 export interface NodeInput {
     key: string;
     label: string;
-    type: 'string' | 'number' | 'boolean' | 'select'; 
+    type: 'string' | 'number' | 'boolean' | 'select';
     mandatory: boolean;
     description?: string;
-    options?: { label: string; value: string }[]; 
+    options?: NodeInputOption[]; // Only used if type === 'select'
     defaultValue?: any;
 }
 
-
 export interface NodeUI {
-    type: string;           
-    label: string;         
+    type: string; 
+    label: string;
     description: string;
-    icon: string;          
+    icon: string;
 }
-
 
 
 export interface NodeDefinition {

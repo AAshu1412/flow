@@ -171,14 +171,105 @@ export function evaluateJavaScript(code: string, envelope: Record<string, any>):
 }
 
 
+// export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload: WorkflowPayload) => {
+//     console.log(`\n========== STARTING WORKFLOW: ${payload.workflowId} ==========`);
+    
+//     // 1. The Universal Data Envelope (Stores state)
+//     const envelope: Record<string, any> = {};
+    
+//     // 2. The Execution Queue
+//     const queue: string[] = [payload.triggerNodeId];
+
+//     while (queue.length > 0) {
+//         const currentNodeId = queue.shift()!;
+//         const node = payload.nodes[currentNodeId];
+
+//         if (!node) {
+//             console.warn(`[WARNING] Node ${currentNodeId} found in edges but not in nodes object.`);
+//             continue;
+//         }
+
+//         console.log(`\n[->] Processing Node: ${node.id} (${node.service}:${node.operation})`);
+
+//         // 3. Evaluate Expressions (Inject real data into inputs)
+//         const parsedInputs = evaluateInputs(node.inputs, envelope);
+//         let matchedHandle = "default"; // Standard nodes use default routing
+
+//         try {
+//             // 4. Execution & Routing Logic
+//             if (node.service === "core" && node.operation === "router") {
+//                 console.log(`[ROUTER] Evaluating Rules...`);
+//                 matchedHandle = evaluateRouter(parsedInputs.rules, parsedInputs.fallbackHandle);
+//                 console.log(`[ROUTER] Path chosen: ${matchedHandle}`);
+                
+//                 // Save router decision to envelope just in case
+//                 envelope[currentNodeId] = { matchedHandle }; 
+//             } else {
+//                 // Run normal API nodes AND Logic nodes!
+//                 const result = await executeSingleNode(
+//                     userId,
+//                     node.service,
+//                     node.operation,
+//                     node.selectedAccounts,
+//                     parsedInputs,
+//                     { full_envelope: envelope } // 🌟 THE FIX: Pass the envelope for Transformer nodes!
+//                 );
+//                 // Save output to envelope!
+//                 envelope[currentNodeId] = result;
+//             }
+
+//             // 5. Find Next Steps (Graph Traversal)
+//             const outgoingEdges = payload.edges.filter(e => e.source === currentNodeId);
+            
+//             for (const edge of outgoingEdges) {
+//                 if (node.service === "core" && node.operation === "router") {
+//                     // IF IT IS A ROUTER: Only follow the edge that matches the winning handle!
+//                     if (edge.sourceHandle === matchedHandle) {
+//                         queue.push(edge.target);
+//                     }
+//                 } else {
+//                     // IF NORMAL NODE: Follow all outgoing edges
+//                     queue.push(edge.target);
+//                 }
+//             }
+
+//         } catch (error: any) {
+//             console.error(`[ERROR] Node ${node.id} failed:`, error.message);
+//             // In a production app, you might want to halt the workflow or trigger a retry here.
+//             throw error; 
+//         }
+//     }
+
+//     console.log(`\n========== WORKFLOW FINISHED: ${payload.workflowId} ==========`);
+//     return envelope; // Return the final state of all nodes
+// };
+
+
 export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload: WorkflowPayload) => {
-    console.log(`\n========== STARTING WORKFLOW: ${payload.workflowId} ==========`);
+    console.log(`\n========== STARTING WORKFLOW: ${payload.workflowId || 'test_run'} ==========`);
     
     // 1. The Universal Data Envelope (Stores state)
     const envelope: Record<string, any> = {};
     
-    // 2. The Execution Queue
-    const queue: string[] = [payload.triggerNodeId];
+    // 2. AUTO-DETECT STARTING NODES
+    // A starting node is any node that is NEVER listed as a "target" in the edges array.
+    const allNodeIds = Object.keys(payload.nodes);
+    const targetNodeIds = new Set(payload.edges.map(e => e.target));
+    const startingNodes = allNodeIds.filter(id => !targetNodeIds.has(id));
+
+    if (startingNodes.length === 0) {
+        throw new Error("No starting nodes found! Is your workflow an infinite loop?");
+    }
+
+    console.log(`[ENGINE] Auto-detected starting nodes:`, startingNodes);
+
+    // 3. The Execution Queue & Protection Set
+    const queue: string[] = [...startingNodes];
+    
+    // 🌟 THE FIX FOR 3-to-1 CONVERGENCE:
+    // This Set keeps track of nodes that have already been queued so we don't execute 
+    // the target node 3 separate times when A, B, and C all connect to D.
+    const enqueued = new Set<string>(startingNodes);
 
     while (queue.length > 0) {
         const currentNodeId = queue.shift()!;
@@ -191,55 +282,53 @@ export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload:
 
         console.log(`\n[->] Processing Node: ${node.id} (${node.service}:${node.operation})`);
 
-        // 3. Evaluate Expressions (Inject real data into inputs)
+        // 4. Evaluate Expressions (Inject real data into inputs)
         const parsedInputs = evaluateInputs(node.inputs, envelope);
-        let matchedHandle = "default"; // Standard nodes use default routing
+        let matchedHandle = "default"; 
 
         try {
-            // 4. Execution & Routing Logic
+            // 5. Execution Logic
             if (node.service === "core" && node.operation === "router") {
                 console.log(`[ROUTER] Evaluating Rules...`);
                 matchedHandle = evaluateRouter(parsedInputs.rules, parsedInputs.fallbackHandle);
-                console.log(`[ROUTER] Path chosen: ${matchedHandle}`);
-                
-                // Save router decision to envelope just in case
                 envelope[currentNodeId] = { matchedHandle }; 
             } else {
-                // Run normal API nodes AND Logic nodes!
                 const result = await executeSingleNode(
                     userId,
                     node.service,
                     node.operation,
                     node.selectedAccounts,
                     parsedInputs,
-                    { full_envelope: envelope } // 🌟 THE FIX: Pass the envelope for Transformer nodes!
+                    { full_envelope: envelope }
                 );
-                // Save output to envelope!
                 envelope[currentNodeId] = result;
             }
 
-            // 5. Find Next Steps (Graph Traversal)
+            // 6. Find Next Steps (Graph Traversal)
             const outgoingEdges = payload.edges.filter(e => e.source === currentNodeId);
             
             for (const edge of outgoingEdges) {
+                let shouldFollowEdge = false;
+
                 if (node.service === "core" && node.operation === "router") {
-                    // IF IT IS A ROUTER: Only follow the edge that matches the winning handle!
-                    if (edge.sourceHandle === matchedHandle) {
-                        queue.push(edge.target);
-                    }
+                    if (edge.sourceHandle === matchedHandle) shouldFollowEdge = true;
                 } else {
-                    // IF NORMAL NODE: Follow all outgoing edges
+                    shouldFollowEdge = true;
+                }
+
+                // If the edge is valid, AND the target node hasn't been queued yet, add it!
+                if (shouldFollowEdge && !enqueued.has(edge.target)) {
                     queue.push(edge.target);
+                    enqueued.add(edge.target); // Mark as queued so it doesn't run twice
                 }
             }
 
         } catch (error: any) {
             console.error(`[ERROR] Node ${node.id} failed:`, error.message);
-            // In a production app, you might want to halt the workflow or trigger a retry here.
             throw error; 
         }
     }
 
-    console.log(`\n========== WORKFLOW FINISHED: ${payload.workflowId} ==========`);
-    return envelope; // Return the final state of all nodes
+    console.log(`\n========== WORKFLOW FINISHED ==========`);
+    return envelope; 
 };

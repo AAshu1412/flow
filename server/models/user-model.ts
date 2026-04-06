@@ -153,7 +153,8 @@ const userSchema = new Schema({
     google_connections: [{ type: Schema.Types.ObjectId, ref: 'GoogleConnection' }],
     notion_connections: [{ type: Schema.Types.ObjectId, ref: 'NotionConnection' }],
     discord_connections: [{ type: Schema.Types.ObjectId, ref: 'DiscordConnection' }],
-    telegram_connections: [{ type: Schema.Types.ObjectId, ref: 'TelegramConnection' }],
+    workflow_connections: [{ type: Schema.Types.ObjectId, ref: 'Workflow' }],
+    // telegram_connections: [{ type: Schema.Types.ObjectId, ref: 'TelegramConnection' }],
 }, { timestamps: true });
 
 
@@ -176,7 +177,9 @@ const User: Model<IUser> = model<IUser>('User', userSchema);
 const GoogleConnection = model<IGoogleConnection>('GoogleConnection', googleSchema);
 const NotionConnection = model<INotionConnection>('NotionConnection', notionSchema);
 const DiscordConnection = model<IDiscordConnection>('DiscordConnection', discordSchema);
-const TelegramConnection = model<ITelegramConnection>('TelegramConnection', telegramSchema);
+// const TelegramConnection = model<ITelegramConnection>('TelegramConnection', telegramSchema);
 
 
-export  {User, GoogleConnection, NotionConnection, DiscordConnection, TelegramConnection} ;
+// export  {User, GoogleConnection, NotionConnection, DiscordConnection, TelegramConnection} ;
+export  {User, GoogleConnection, NotionConnection, DiscordConnection} ;
+
