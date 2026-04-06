@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import { getNodeProfileForBackendProcessing, isValidNodeOperation } from "../nodes/node_helper";
 import { DiscordConnection, GoogleConnection, NotionConnection } from "../models/user-model";
 import { WorkflowPayload } from "../types/workflow-type";
+import vm from 'vm';
 
 /**
  * Core Execution Engine: Runs a single node's logic.
@@ -138,6 +139,26 @@ export function evaluateRouter(rules: { handle: string, condition: string }[], f
     return fallbackHandle; // If nothing matched, go down the Else path
 }
 
+
+export function evaluateJavaScript(code: string, envelope: Record<string, any>): any {
+    // 1. Define what the user is allowed to see (the Data Envelope)
+    const sandbox = {
+        $data: envelope, // Users access data via {{$data.node_1.text}}
+        console: { log: (...args: any[]) => console.log('[USER-LOG]', ...args) }
+    };
+
+    // 2. Create the isolated context
+    vm.createContext(sandbox);
+
+    try {
+        // 3. Run the code with a 1000ms timeout
+        // We wrap the code in an IIFE or simply execute it
+        const script = new vm.Script(code);
+        return script.runInContext(sandbox, { timeout: 1000 });
+    } catch (error: any) {
+        throw new Error(`JS Sandbox Error: ${error.message}`);
+    }
+}
 
 
 export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload: WorkflowPayload) => {

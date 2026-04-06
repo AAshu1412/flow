@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { executeSingleNode } from "../utils/workflow-helper"; // Adjust path as needed
+import { executeSingleNode } from "../utils/workflow-helper"; 
 
 const node_test = async (req: Request, res: Response) => {
     try {
@@ -7,8 +7,6 @@ const node_test = async (req: Request, res: Response) => {
         const { service, operation, selectedAccounts, inputs } = req.body;
 
         console.log("[DEBUG] Request Payload:", { userId, service, operation, selectedAccounts, inputs });
-
-        // Safely fallback strings/objects if they are missing from the request body
         const accountId = selectedAccounts || "";
         const nodeInputs = inputs || {};
 
@@ -21,7 +19,6 @@ const node_test = async (req: Request, res: Response) => {
         console.error("\n[ERROR] Exception caught in node_test:");
         console.error(error.message || error);
         
-        // Return a 400 for validation/missing account errors, and 500 for actual API crashes
         const statusCode = error.message.includes("Invalid node operation") || error.message.includes("not found") ? 400 : 500;
 
         return res.status(statusCode).json({ 
