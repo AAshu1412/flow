@@ -9,5 +9,6 @@ import authMiddleware from "../middlewares/auth-middleware";
 // router.route("/login").post(validate(loginSchema),authcontrollers.login);
 router.route("/user").get(authMiddleware,authcontrollers.user);
 router.route("/nodes").get(authcontrollers.getAvailableNodesMenu);
+router.route("/nodeDetails").post(authMiddleware,authcontrollers.getNodeProfile);
 
 export default router;    

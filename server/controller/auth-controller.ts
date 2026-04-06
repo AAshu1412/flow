@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import {Request,Response} from "express";
 import {getUserWithAllConnections} from "../utils/useless-rn/db-func";
 import { SERVICE_OPERATIONS } from "../constants";
+import { getNodeProfileForFrontend } from "../nodes/node_helper";
 
 // const register = async (req:Request, res:Response) => {
 //     try {
@@ -164,13 +165,39 @@ const getAvailableNodesMenu = (req: Request, res: Response) => {
 
 
 
+const getNodeProfile = async (req: Request, res: Response) => {
+    try {
+        const userId = req.db_doc_id; 
+        const { service, operation } = req.body;
+
+        if (!service || !operation) {
+            return res.status(400).json({ 
+                message: "Both 'service' and 'operation' query parameters are required." 
+            });
+        }
+
+        const profile = await getNodeProfileForFrontend(
+            service as string, 
+            operation as string, 
+            userId
+        );
+
+        return res.status(200).json({
+            message: "Node profile fetched successfully",
+            data: profile
+        });
+
+    } catch (error: any) {
+        console.error("\n[API ERROR] Failed to fetch node profile:", error);
+        
+        const statusCode = error.message.includes("Node not found") ? 404 : 500;
+        
+        return res.status(statusCode).json({ 
+            message: "Failed to fetch node profile", 
+            error: error.message 
+        });
+    }
+};
 
 
-
-
-
-
-
-
-
-export default { user , getAvailableNodesMenu};
+export default { user , getAvailableNodesMenu, getNodeProfile};
