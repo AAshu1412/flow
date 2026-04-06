@@ -150,6 +150,7 @@ const getAvailableNodesMenu = (req: Request, res: Response) => {
         ];
 
         return res.status(200).json({ 
+            status_response: 200,
             message: "Menu fetched successfully", 
             data: menu 
         });

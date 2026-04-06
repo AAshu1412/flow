@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { runWorkflowGraph } from "../utils/workflow-helper";
 import { WorkflowPayload } from "../types/workflow-type";
 import {Workflow} from "../models/workflow-template-model";
+import { User } from "../models/user-model";
 
 // const execute_workflow = async (req: Request, res: Response) => {
 //     try {
@@ -82,6 +83,9 @@ const saveWorkflow = async (req: Request, res: Response) => {
                 edges,
                 isActive: isActive || false,
                 description: description || ""
+            });
+            await User.findByIdAndUpdate(userId, {
+                $push: { workflow_connections: workflow._id }
             });
         }
 

@@ -16,6 +16,7 @@ const getUserWithAllConnections = async (
         const notionSafeFields = '-notion_user_id -bot_id -access_token -refresh_token -token_type';
         const discordSafeFields = '-discord_user_id -access_token -token_type -refresh_token -access_token_expires_in';
         const telegramSafeFields = '-_id -userId -telegram_id -bot_token -auth_date -chat_id';
+        const workflowSafeFields = '-nodes -edges';
 
         let query = User.findById(userId);
 
@@ -24,13 +25,15 @@ const getUserWithAllConnections = async (
                 .populate('google_connections', googleSafeFields)
                 .populate('notion_connections', notionSafeFields)
                 .populate('discord_connections', discordSafeFields)
-                .populate('telegram_connections', telegramSafeFields);
+                 .populate('workflow_connections', workflowSafeFields);
+                // .populate('telegram_connections', telegramSafeFields);
         } else {
             query = query
                 .populate('google_connections')
                 .populate('notion_connections')
                 .populate('discord_connections')
-                .populate('telegram_connections');
+                .populate('workflow_connections');
+                // .populate('telegram_connections');
         }
 
         const user = await query.exec();

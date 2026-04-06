@@ -54,8 +54,9 @@ export const google_authenticate = async (req: Request, res: Response) => {
 
         const scopeString = encodeURIComponent(scopes.join(' '));
         const redirectUri = encodeURIComponent("http://localhost:5001/api/auth/google/callback");
+        const userIdState = req.query.userId ? (req.query.userId as string) : "login";
 
-        const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&include_granted_scopes=true&state=pass-through%20value&access_type=offline&prompt=consent&scope=${scopeString}`;
+        const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&include_granted_scopes=true&state=${userIdState}&access_type=offline&prompt=consent&scope=${scopeString}`;
         
         res.redirect(url);
     }
@@ -66,9 +67,9 @@ export const google_authenticate = async (req: Request, res: Response) => {
 
 const notion_authenticate = async (req: Request, res: Response) => {
     try {
-        // -- ASHU
-        // const userId = req.db_doc_id;
-        // -- ASHU 
+        
+        const userId = req.db_doc_id;
+        
 
         
 
@@ -82,9 +83,9 @@ const notion_authenticate = async (req: Request, res: Response) => {
 
 const discord_authenticate = async (req: Request, res: Response) => {
     try {
-        // -- ASHU
-        // const userId = req.db_doc_id;
-        // -- ASHU 
+       
+         const userId = req.db_doc_id;
+       
 
         
 

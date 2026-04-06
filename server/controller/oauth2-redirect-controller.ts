@@ -4,8 +4,111 @@ import { DiscordConnection, GoogleConnection, NotionConnection, User } from "../
 import { Types } from "mongoose";
 
 
+// const google_authenticate_callback = async (req: Request, res: Response) => {
+//     const code = req.query.code as string;
+//     const state = req.query.state as string;
+//     console.log("Google Callback code: " + code);
+
+//     if (!code) {
+//         return res.status(400).send('No code provided');
+//     }
+
+//     try {
+//         const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/x-www-form-urlencoded'
+//             },
+//             body: new URLSearchParams({
+//                 client_id: process.env.GOOGLE_CLIENT_ID as string,
+//                 client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
+//                 grant_type: 'authorization_code',
+//                 code: code,
+//                 redirect_uri: "http://localhost:5001/api/auth/google/callback"
+//             })
+//         });
+
+//         const tokenData = await tokenResponse.json();
+
+//         if (tokenData.error) {
+//             return res.status(400).send('Failed to get token: ' + tokenData.error_description);
+//         }
+
+//         console.log("Google Token: " + JSON.stringify(tokenData));
+
+//         const userResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
+//             headers: {
+//                 authorization: `${tokenData.token_type} ${tokenData.access_token}`
+//             }
+//         });
+
+//         const userData = await userResponse.json();
+//         console.log("OpenID: " + JSON.stringify(userData));
+
+//         const absoluteExpiryTime = Date.now() + (tokenData.expires_in * 1000);
+
+
+//         if (userData && tokenData) {
+//             let userInDB = await User.findOne({ email: userData.email });
+
+//             if (!userInDB) {
+//                 userInDB = await User.create({
+//                     email: userData.email,
+//                     name: userData.name,
+//                     picture: userData.picture,
+//                 });
+//             }
+
+//             let googleConn = await GoogleConnection.findOne({
+//                 userId: userInDB._id,
+//                 google_id: userData.sub
+//             });
+
+//             if (googleConn) {
+//                 googleConn.access_token = tokenData.access_token;
+//                 googleConn.refresh_token = tokenData.refresh_token || googleConn.refresh_token;
+//                 googleConn.access_token_expires_in = absoluteExpiryTime;
+//                 googleConn.id_token = tokenData.id_token || googleConn.id_token;
+//                 googleConn.scope = tokenData.scope || googleConn.scope;
+//                 await googleConn.save();
+//             } else {
+//                 googleConn = await GoogleConnection.create({
+//                     userId: userInDB._id,
+//                     google_id: userData.sub,
+//                     email: userData.email,
+//                     access_token: tokenData.access_token,
+//                     refresh_token: tokenData.refresh_token,
+//                     token_type: tokenData.token_type,
+//                     access_token_expires_in: absoluteExpiryTime,
+//                     scope: tokenData.scope,
+//                     id_token: tokenData.id_token,
+//                 });
+
+//                 // link it to the user's array
+//                 userInDB.google_connections.push(googleConn._id as Types.ObjectId);
+//                 await userInDB.save();
+//             }
+
+
+//             const appToken = userInDB.generateToken();
+//             res.json({
+//                 message: "Successfully logged in manually!",
+//                 user: userData,
+//                 tokens: tokenData,
+//                 jwtToken: appToken
+//             });
+//         }
+//     } catch (error) {
+//         console.error('Error during OAuth flow:', error);
+//         res.status(500).send('Internal Server Error');
+//     }
+// };
+
+
 const google_authenticate_callback = async (req: Request, res: Response) => {
     const code = req.query.code as string;
+    const state = req.query.state as string; // 🌟 This will be "login" or the actual userId
+    
     console.log("Google Callback code: " + code);
 
     if (!code) {
@@ -15,9 +118,7 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
     try {
         const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
                 client_id: process.env.GOOGLE_CLIENT_ID as string,
                 client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
@@ -28,36 +129,36 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
         });
 
         const tokenData = await tokenResponse.json();
-
-        if (tokenData.error) {
-            return res.status(400).send('Failed to get token: ' + tokenData.error_description);
-        }
-
-        console.log("Google Token: " + JSON.stringify(tokenData));
+        if (tokenData.error) return res.status(400).send('Failed to get token: ' + tokenData.error_description);
 
         const userResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
-            headers: {
-                authorization: `${tokenData.token_type} ${tokenData.access_token}`
-            }
+            headers: { authorization: `${tokenData.token_type} ${tokenData.access_token}` }
         });
 
         const userData = await userResponse.json();
-        console.log("OpenID: " + JSON.stringify(userData));
-
         const absoluteExpiryTime = Date.now() + (tokenData.expires_in * 1000);
 
-
         if (userData && tokenData) {
-            let userInDB = await User.findOne({ email: userData.email });
+            let userInDB;
 
-            if (!userInDB) {
-                userInDB = await User.create({
-                    email: userData.email,
-                    name: userData.name,
-                    picture: userData.picture,
-                });
+            // 🌟 LOGIC BRANCH: Login vs Linking Account
+            if (state && state !== "login") {
+                // LINKING: Find the user who clicked "Add Account" in their dashboard
+                userInDB = await User.findById(state);
+                if (!userInDB) return res.status(404).send('Original user not found in database');
+            } else {
+                // PRIMARY LOGIN: Find or create the master user account
+                userInDB = await User.findOne({ email: userData.email });
+                if (!userInDB) {
+                    userInDB = await User.create({
+                        email: userData.email,
+                        name: userData.name,
+                        picture: userData.picture,
+                    });
+                }
             }
 
+            // Create or update the specific Google Connection
             let googleConn = await GoogleConnection.findOne({
                 userId: userInDB._id,
                 google_id: userData.sub
@@ -83,19 +184,16 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
                     id_token: tokenData.id_token,
                 });
 
-                // link it to the user's array
                 userInDB.google_connections.push(googleConn._id as Types.ObjectId);
                 await userInDB.save();
             }
 
-
+            // Generate the JWT for the frontend
             const appToken = userInDB.generateToken();
-            res.json({
-                message: "Successfully logged in manually!",
-                user: userData,
-                tokens: tokenData,
-                jwtToken: appToken
-            });
+
+            // 🌟 REDIRECT TO FRONTEND (Change localhost:3000 to your actual frontend URL)
+            // The React app will read the token from the URL and save it to Zustand
+            res.redirect(`http://localhost:3000/auth-success?token=${appToken}`);
         }
     } catch (error) {
         console.error('Error during OAuth flow:', error);
@@ -250,7 +348,7 @@ const discord_authenticate_callback = async (req: Request, res: Response) => {
 
 
         if (userData && tokenData) {
-             if (!tokenData.guild) {
+            if (!tokenData.guild) {
                 return res.status(400).send('No server selected. Please authorize the bot for a specific server.');
             }
 
@@ -263,7 +361,7 @@ const discord_authenticate_callback = async (req: Request, res: Response) => {
 
             let discordConn = await DiscordConnection.findOne({
                 userId: userInDB._id,
-                guild_id: tokenData.guild.id 
+                guild_id: tokenData.guild.id
             });
 
             if (discordConn) {
@@ -271,7 +369,7 @@ const discord_authenticate_callback = async (req: Request, res: Response) => {
                 discordConn.refresh_token = tokenData.refresh_token || discordConn.refresh_token;
                 discordConn.access_token_expires_in = absoluteExpiryTime;
                 discordConn.scope = tokenData.scope || discordConn.scope;
-                
+
                 discordConn.discord_user_id = userData.id;
                 discordConn.username = userData.username;
                 discordConn.global_name = userData.global_name;
@@ -291,9 +389,9 @@ const discord_authenticate_callback = async (req: Request, res: Response) => {
                     token_type: tokenData.token_type,
                     access_token_expires_in: absoluteExpiryTime,
                     scope: tokenData.scope,
-                    guild_id: tokenData.guild.id,       
-                    guild_name: tokenData.guild.name,   
-                    guild_icon: tokenData.guild.icon    
+                    guild_id: tokenData.guild.id,
+                    guild_name: tokenData.guild.name,
+                    guild_icon: tokenData.guild.icon
                 });
 
                 userInDB.discord_connections.push(discordConn._id as Types.ObjectId);
