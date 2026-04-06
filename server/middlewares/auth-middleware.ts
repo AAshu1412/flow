@@ -5,15 +5,21 @@ import { CustomJwtPayload } from "../types/user-type";
 
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.header("Authorization");
+    let jwtToken = "";
 
-  if (!token) {
-    return res
-      .status(401)
-      .json({ msg: "Unauthorization HTTP, Token not provided" });
-  }
+    // 1. Check Header (For standard API calls like fetch/axios)
+    const authHeader = req.header("Authorization");
+    if (authHeader) {
+        jwtToken = authHeader.replace("Bearer", "").trim();
+    } 
+    // 2. 🌟 NEW: Check Query String (For browser redirects like OAuth)
+    else if (req.query.token) {
+        jwtToken = req.query.token as string;
+    }
 
-  const jwtToken = token.replace("Bearer", "").trim();
+    if (!jwtToken) {
+        return res.status(401).json({ msg: "Unauthorized HTTP, Token not provided" });
+    }
   console.log(
     "\n\n########## *******Token form auth middleware******* ##############\n\n"
   );

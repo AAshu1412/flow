@@ -16,23 +16,25 @@ export const useOAuthStore = create<OAuthStoreState>()(
         (set) => ({
             
           
-            // 🌟 NEW: OAuth Handlers
-            loginWithGoogle: () => {
-                // No userId = Primary Login
+             loginWithGoogle: () => {
+                // Primary login requires no token
                 window.location.href = `${SERVER_URL}/api/auth/google`;
             },
             
-            linkGoogleAccount: (userId: string) => {
-                // Appending userId allows the backend to link the new account to this user
-                window.location.href = `${SERVER_URL}/api/auth/google?userId=${userId}`;
+            linkGoogleAccount: () => {
+                const token = useJWTTokenStore.getState().jwtToken;
+                // Pass the token so authMiddleware can verify it!
+                window.location.href = `${SERVER_URL}/api/auth/google?token=${token}`;
             },
 
-            linkNotionAccount: (userId: string) => {
-                window.location.href = `${SERVER_URL}/api/auth/notion?userId=${userId}`;
+            linkNotionAccount: () => {
+                const token = useJWTTokenStore.getState().jwtToken;
+                window.location.href = `${SERVER_URL}/api/auth/notion?token=${token}`;
             },
 
-            linkDiscordAccount: (userId: string) => {
-                window.location.href = `${SERVER_URL}/api/auth/discord?userId=${userId}`;
+            linkDiscordAccount: () => {
+                const token = useJWTTokenStore.getState().jwtToken;
+                window.location.href = `${SERVER_URL}/api/auth/discord?token=${token}`;
             }
         }),
         { name: "OAuthStore" }

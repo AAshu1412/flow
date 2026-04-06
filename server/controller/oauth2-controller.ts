@@ -67,9 +67,11 @@ export const google_authenticate = async (req: Request, res: Response) => {
 
 const notion_authenticate = async (req: Request, res: Response) => {
     try {
-        
+        // -- ASHU
+
         const userId = req.db_doc_id;
-        
+
+        // -- ASHU 
 
         
 
@@ -83,9 +85,11 @@ const notion_authenticate = async (req: Request, res: Response) => {
 
 const discord_authenticate = async (req: Request, res: Response) => {
     try {
-       
-         const userId = req.db_doc_id;
-       
+        // -- ASHU
+
+        const userId = req.db_doc_id;
+
+        // -- ASHU 
 
         
 
