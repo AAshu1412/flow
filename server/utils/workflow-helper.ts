@@ -13,7 +13,8 @@ export const executeSingleNode = async (
     service: string,
     operation: string,
     selectedAccounts: string,
-    inputs: Record<string, any>
+    inputs: Record<string, any>,
+    extraContext: Record<string, any> = {} // 🌟 Added this to hold the envelope & other data
 ): Promise<any> => {
     
     console.log(`\n--- [EXECUTOR] STARTING: ${service}/${operation} ---`);
@@ -25,42 +26,51 @@ export const executeSingleNode = async (
 
     // 2. Load Profile
     const node = getNodeProfileForBackendProcessing(service, operation);
-    console.log(`[EXECUTOR] Loaded backend profile for: ${node.templateId}`);
+    
+    // 3. Prepare Environment Object
+    // We start with the extraContext (which contains the full_envelope)
+    // and add the userId so the node can use it if needed.
+    let nodeEnvironment: any = { 
+        ...extraContext, 
+        userId: userId 
+    }; 
 
-    let environment: any = {}; 
-
-    // 3. Refresh/Fetch Tokens if needed
+    // 4. Refresh/Fetch Tokens if needed
     if (node.getToken) {
         console.log(`[EXECUTOR] Calling getToken for account: ${selectedAccounts}`);
         await node.getToken(userId, selectedAccounts);
     }
 
-    console.log(`[EXECUTOR] Fetching environment for service: ${service}`);
-    
-    // 4. Retrieve Environment/Credentials from Database
+    // 5. Retrieve Access Tokens from Database
+    let connectionDoc: any = null;
     if (service === 'gmail' || service.startsWith('google_')) {
-        environment = await GoogleConnection.findOne({ userId: userId, email: selectedAccounts });
+        connectionDoc = await GoogleConnection.findOne({ userId: userId, email: selectedAccounts });
     } else if (service === 'notion') {
-        environment = await NotionConnection.findOne({ userId: userId, workspace_id: selectedAccounts });
+        connectionDoc = await NotionConnection.findOne({ userId: userId, workspace_id: selectedAccounts });
     } else if (service === 'discord') {
-        environment = await DiscordConnection.findOne({ userId: userId, guild_id: selectedAccounts });
+        connectionDoc = await DiscordConnection.findOne({ userId: userId, guild_id: selectedAccounts });
     } else if (service === 'gemini') {
-        environment = { access_token: process.env.GEMINI_API_KEY };
+        nodeEnvironment.access_token = process.env.GEMINI_API_KEY;
     } else if (service === 'core') {
-        environment = { access_token: 'none_required' };
+        nodeEnvironment.access_token = 'none_required';
     }
 
-    if (!environment || !environment.access_token) {
+    // Assign the access token to the environment object passed to node.execute
+    if (connectionDoc) {
+        nodeEnvironment.access_token = connectionDoc.access_token;
+    }
+
+    if (!nodeEnvironment.access_token) {
         throw new Error(`Account or API Key not found for service: ${service}`);
     }
 
-    // 5. Execute Node
+    // 6. Execute Node
+    // We pass the inputs AND the enriched nodeEnvironment (token + envelope + userId)
     console.log("[EXECUTOR] Environment ready. Executing node logic...");
-    const result = await node.execute(inputs, { access_token: environment.access_token });
+    const result = await node.execute(inputs, nodeEnvironment);
     
     console.log(`--- [EXECUTOR] FINISHED: ${service}/${operation} ---\n`);
     
-    // Return the raw data so the Graph Runner can inject it into the Universal Data Envelope
     return result; 
 };
 
@@ -195,13 +205,14 @@ export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload:
                 // Save router decision to envelope just in case
                 envelope[currentNodeId] = { matchedHandle }; 
             } else {
-                // Run normal API nodes!
+                // Run normal API nodes AND Logic nodes!
                 const result = await executeSingleNode(
                     userId,
                     node.service,
                     node.operation,
                     node.selectedAccounts,
-                    parsedInputs
+                    parsedInputs,
+                    { full_envelope: envelope } // 🌟 THE FIX: Pass the envelope for Transformer nodes!
                 );
                 // Save output to envelope!
                 envelope[currentNodeId] = result;

@@ -7,7 +7,7 @@ export const FRONTEND_URLS = [
 export const SERVICE_OPERATIONS = {
     discord: ["get_guilds", "get_channels", "send_message", "get_connections"],
     gemini: ["generate_text"],
-    core: ["manual_input"],
+    core: ["manual_input","transform"],
     gmail: ["send_message", "get_thread", "list_threads"],
     google_docs: ["create_document", "append_document", "get_document"],
     google_drive: ["list_files"],

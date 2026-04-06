@@ -53,7 +53,7 @@ export interface NodeDefinition {
      * @param evaluatedInputs The final values after the expression engine parses them.
      * @param environment Contains tokens and API keys (e.g., { gmailAccessToken: "..." })
      */
-    execute: (evaluatedInputs: Record<string, any>, environment: {access_token?:string, apiKey?:string}) => Promise<any>;
+    execute: (evaluatedInputs: Record<string, any>, environment: {access_token?:string, apiKey?:string, full_envelope?:any, userId?:string | Types.ObjectId}) => Promise<any>;
 }
 
 

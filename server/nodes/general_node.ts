@@ -1,5 +1,6 @@
 // nodes/core.ts
 import { NodeDefinition } from "../types/node-type";
+import { evaluateJavaScript, executeSingleNode } from "../utils/workflow-helper";
 // export interface NodeInput {
 //     key: string;
 //     label: string;
@@ -70,5 +71,62 @@ export const coreNodes: Record<string, NodeDefinition> = {
                 data: parsedData
             };
         }
+    },
+    "core_transform_v1": {
+    service: "core",
+    operation: "transform",
+    ui: {
+        type: "custom/logicNode",
+        label: "Data Transformer",
+        description: "Manipulate data using JavaScript or AI instructions.",
+        icon: "https://img.icons8.com/fluency/48/variable.png"
+    },
+        inputs: [
+            {
+                key: "mode", label: "Mode", type: "select", options: [
+                    { label: "JavaScript (Fast/Exact)", value: "js" },
+                    { label: "AI (Natural Language)", value: "ai" }
+                ], defaultValue: "js", mandatory: true
+            },
+            { key: "instruction", label: "Instruction / Code", type: "string", mandatory: true }
+        ],
+   execute: async function (evaluatedInputs, environment) {
+        const { mode, instruction } = evaluatedInputs;
+        
+        // 1. Pull the master data and the User ID from the environment
+        const envelope = environment.full_envelope; 
+        const userId = environment.userId; // Passed from the Graph Executor
+
+        if (mode === "js") {
+            // JS doesn't need to call other nodes, it just runs locally in the VM
+            return evaluateJavaScript(instruction, envelope);
+        } else {
+            // AI MODE: We need to call the Gemini node
+            if (!userId){
+                throw new Error("User ID is required for AI mode");
+            }
+            const prompt = `
+                You are a data transformation engine. 
+                CONTEXTUAL DATA (JSON): ${JSON.stringify(envelope)}
+                USER INSTRUCTION: ${instruction}
+                
+                Return ONLY the result of the instruction. Do not explain.
+            `;
+
+            // 2. Pass the real userId so executeSingleNode can find the Gemini API Key
+            const aiResult = await executeSingleNode(
+                userId, 
+                "gemini", 
+                "generate_text", 
+                "", // Gemini usually doesn't need a selectedAccount (it uses process.env)
+                { 
+                    model: "gemini-2.5-flash", 
+                    prompt 
+                }
+            );
+            
+            return aiResult.text;
+        }
     }
+}
 };
