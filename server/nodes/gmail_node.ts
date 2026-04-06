@@ -1,6 +1,5 @@
 // nodes/gmail.ts
 import { NodeDefinition } from "../types/node-type";
-// --- Types & Interfaces ---
 // export interface NodeInput {
 //     key: string;
 //     label: string;

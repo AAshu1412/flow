@@ -1,4 +1,3 @@
-// nodes/gemini.ts
 import { NodeDefinition } from "../types/node-type";
 // export interface NodeDefinition {
 //     service: string;
@@ -28,11 +27,11 @@ export const geminiNodes: Record<string, NodeDefinition> = {
                 description: "Select the Gemini model to use.",
                 // Provide the exact API strings as values for the dropdown
                 options: [
-                    { label: "Gemini 1.5 Flash (Fast & Cheap)", value: "gemini-1.5-flash" },
-                    { label: "Gemini 1.5 Pro (Advanced Reasoning)", value: "gemini-1.5-pro" },
-                    { label: "Gemini 2.0 Flash (Next Gen Fast)", value: "gemini-2.0-flash" }
+                    { label: "Gemini 2.5 Flash (Fast & Cheap)", value: "gemini-2.5-flash" },
+                    { label: "Gemini 2.5 Pro (Advanced Reasoning)", value: "gemini-2.5-pro" },
+                    // { label: "Gemini 2.0 Flash (Next Gen Fast)", value: "gemini-2.0-flash" }
                 ],
-                defaultValue: "gemini-1.5-flash" // Safe default
+                defaultValue: "gemini-2.5-flash" // Safe default
             },
             { 
                 key: "prompt", 
@@ -43,7 +42,6 @@ export const geminiNodes: Record<string, NodeDefinition> = {
             }
         ],
         execute: async function (evaluatedInputs, environment) {
-            // The frontend passes the 'value' from the dropdown (e.g., "gemini-1.5-flash")
             const { model, prompt } = evaluatedInputs;
             const apiKey = environment.apiKey || null;
 
@@ -55,7 +53,6 @@ export const geminiNodes: Record<string, NodeDefinition> = {
                 ]
             };
 
-            // The selected model is injected into the URL dynamically
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
             const response = await fetch(url, {

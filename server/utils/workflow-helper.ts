@@ -14,7 +14,7 @@ export const executeSingleNode = async (
     operation: string,
     selectedAccounts: string,
     inputs: Record<string, any>,
-    extraContext: Record<string, any> = {} // 🌟 Added this to hold the envelope & other data
+    extraContext: Record<string, any> = {} //  added this to hold the envelope & other data
 ): Promise<any> => {
     
     console.log(`\n--- [EXECUTOR] STARTING: ${service}/${operation} ---`);

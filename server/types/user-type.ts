@@ -92,7 +92,6 @@ export interface IUser extends Document {
 // JWT Payload Type
 // ----------------------------------------------------
 
-// Updated to match the new payload inside userSchema.methods.generateToken
 export interface CustomJwtPayload extends JwtPayload {
     userId: string;
     email: string;

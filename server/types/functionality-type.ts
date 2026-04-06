@@ -55,12 +55,10 @@ export interface ServiceNode {
 }
 
 export interface GeneralNode {
-    // Schema to be added later
     [key: string]: any;
 }
 
 export interface LLMNode {
-    // Schema to be added later
     [key: string]: any;
 }
 

@@ -1,7 +1,7 @@
 export interface WorkflowEdge {
     source: string;
     target: string;
-    sourceHandle?: string; // Critical for If/Else routing
+    sourceHandle?: string; 
 }
 
 export interface WorkflowNode {

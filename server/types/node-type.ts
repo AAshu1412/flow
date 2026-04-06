@@ -35,10 +35,10 @@ export interface NodeInput {
 
 
 export interface NodeUI {
-    type: string;           // e.g., "custom/apiNode" or "custom/triggerNode"
-    label: string;          // e.g., "Gmail - Send Email"
+    type: string;           
+    label: string;         
     description: string;
-    icon: string;           // URL to the icon
+    icon: string;          
 }
 
 
@@ -65,8 +65,8 @@ export interface BackendNodeProfile extends NodeDefinition {
 
 export interface AvailableAccount {
     connectionId: string;
-    label: string;      // What the user sees (e.g., "ashu@gmail.com")
-    identifier: string; // What the backend needs (e.g., the email or workspace_id)
+    label: string;      
+    identifier: string; 
 }
 
 export interface FrontendNodeProfile extends Omit<NodeDefinition, 'execute'> {
