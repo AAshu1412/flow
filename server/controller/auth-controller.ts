@@ -1,7 +1,8 @@
 import {User} from "../models/user-model";
 import bcrypt from "bcryptjs";
 import {Request,Response} from "express";
-
+import {getUserWithAllConnections} from "../utils/useless-rn/db-func";
+import { SERVICE_OPERATIONS } from "../constants";
 
 // const register = async (req:Request, res:Response) => {
 //     try {
@@ -94,8 +95,10 @@ import {Request,Response} from "express";
 
 const user = async (req: Request, res: Response) => {
     try {
-        const userData = req.user;
-        console.log(userData);
+        const UserId = req.db_doc_id;
+        console.log(UserId);
+
+        const userData = await getUserWithAllConnections(UserId);
 
         return res.status(200).json({status_response: 200, data: userData });
     }
@@ -105,6 +108,59 @@ const user = async (req: Request, res: Response) => {
 }
 
 
+const getAvailableNodesMenu = (req: Request, res: Response) => {
+    try {
+        // Dynamically build the categorized menu
+        const menu = [
+            {
+                category: "General Nodes",
+                services: [
+                    {
+                        service: "core",
+                        label: "Core Components", // Friendly name for the UI
+                        operations: SERVICE_OPERATIONS.core
+                    }
+                ]
+            },
+            {
+                category: "LLM Nodes",
+                services: [
+                    {
+                        service: "gemini",
+                        label: "Google Gemini",
+                        operations: SERVICE_OPERATIONS.gemini
+                    }
+                ]
+            },
+            {
+                category: "Service Nodes",
+                // Filter out the ones we already used, map the rest dynamically
+                services: Object.keys(SERVICE_OPERATIONS)
+                    .filter(key => key !== "core" && key !== "gemini")
+                    .map(key => {
+                        return {
+                            service: key,
+                            // Optional: Make names look pretty in UI (e.g., "google_docs" -> "Google Docs")
+                            label: key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+                            operations: SERVICE_OPERATIONS[key as keyof typeof SERVICE_OPERATIONS]
+                        };
+                    })
+            }
+        ];
+
+        return res.status(200).json({ 
+            message: "Menu fetched successfully", 
+            data: menu 
+        });
+
+    } catch (error: any) {
+        console.error("[API ERROR] Failed to generate node menu:", error);
+        return res.status(500).json({ 
+            message: "Failed to generate node menu", 
+            error: error.message 
+        });
+    }
+};
 
 
 
@@ -116,4 +172,5 @@ const user = async (req: Request, res: Response) => {
 
 
 
-export default { user };
+
+export default { user , getAvailableNodesMenu};
