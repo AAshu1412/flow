@@ -184,6 +184,7 @@ const getNodeProfile = async (req: Request, res: Response) => {
         );
 
         return res.status(200).json({
+            status_response: 200,
             message: "Node profile fetched successfully",
             data: profile
         });

@@ -12,7 +12,7 @@ const node_test = async (req: Request, res: Response) => {
 
         const result = await executeSingleNode(userId, service, operation, accountId, nodeInputs);
 
-        return res.status(200).json({ result: result });
+        return res.status(200).json({ status_response: 200, data: result });
 
     } catch (error: any) {
         console.error("\n[ERROR] Exception caught in node_test:");
@@ -22,7 +22,7 @@ const node_test = async (req: Request, res: Response) => {
 
         return res.status(statusCode).json({ 
             message: "Node execution failed", 
-            details: error.message 
+            error: error.message 
         });
     }
 }

@@ -45,6 +45,30 @@ export interface WorkflowEdge {
 export interface WorkflowBlueprint extends WorkflowSummary {
     triggerNodeId?: string;
     // Mongoose Maps are converted to standard JS Objects/Records in JSON!
-    nodes: Record<string, WorkflowNode>; 
+    nodes: Record<string, WorkflowNode>;
     edges: WorkflowEdge[];
+}
+
+
+export interface WorkflowExecutionPayload {
+    workflowId?: string;
+    nodes: Record<string, WorkflowNode>;
+    edges: WorkflowEdge[];
+}
+
+export type WorkflowExecutionResult = Record<string, any>;
+
+
+export interface SaveWorkflowPayload {
+    workflowId?: string;
+    name?: string;
+    triggerNodeId?: string;
+    nodes: Record<string, WorkflowNode>;
+    edges?: WorkflowEdge[];
+    isActive?: boolean;
+    description?: string;
+}
+
+export interface SaveWorkflowResult {
+    workflowId: string;
 }

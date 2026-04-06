@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-
+import jwt from "jsonwebtoken";
+import { CustomJwtPayload } from "../types/user-type";
 
 // const google_authenticate = async (req: Request, res: Response) => {
 //     try {
@@ -54,10 +55,21 @@ export const google_authenticate = async (req: Request, res: Response) => {
 
         const scopeString = encodeURIComponent(scopes.join(' '));
         const redirectUri = encodeURIComponent("http://localhost:5001/api/auth/google/callback");
-        const userIdState = req.query.userId ? (req.query.userId as string) : "login";
+        let userIdState = "login";
 
+        if (req.query.token) {
+            try {
+                const secretKey = process.env.JWT_SECRET_KEY;
+                if (!secretKey) throw new Error("Missing Secret Key");
+
+                const decoded = jwt.verify(req.query.token as string, secretKey) as CustomJwtPayload;
+                userIdState = decoded.userId; 
+            } catch (err) {
+                console.warn("Invalid token passed to Google Auth, defaulting to primary login.");
+            }
+        }
         const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&include_granted_scopes=true&state=${userIdState}&access_type=offline&prompt=consent&scope=${scopeString}`;
-        
+
         res.redirect(url);
     }
     catch (error: any) {
@@ -69,7 +81,7 @@ const notion_authenticate = async (req: Request, res: Response) => {
     try {
         // -- ASHU
 
-        const userId = req.db_doc_id;
+         const userId = req.db_doc_id;
 
         // -- ASHU 
 
@@ -87,7 +99,7 @@ const discord_authenticate = async (req: Request, res: Response) => {
     try {
         // -- ASHU
 
-        const userId = req.db_doc_id;
+         const userId = req.db_doc_id;
 
         // -- ASHU 
 
@@ -110,7 +122,7 @@ const discord_authenticate = async (req: Request, res: Response) => {
         const permissions = 3072;
 
         const url = `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&state=${userId}&scope=${scopeString}&permissions=${permissions}`;
-        
+
         res.redirect(url);
     }
     catch (error: any) {

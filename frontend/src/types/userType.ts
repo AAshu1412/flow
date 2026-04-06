@@ -9,7 +9,7 @@ export interface GoogleConnection {
     userId: string;
     email: string;
     scope: string;
-    createdAt: string; 
+    createdAt: string;
     updatedAt: string;
     __v?: number;
 }
@@ -63,14 +63,14 @@ export interface UserProfile {
     email: string;
     name: string;
     picture?: string;
-    
+
     google_connections: GoogleConnection[];
     notion_connections: NotionConnection[];
     discord_connections: DiscordConnection[];
     telegram_connections?: TelegramConnection[];
-    
+
     workflow_connections: WorkflowSummary[];
-    
+
     createdAt: string;
     updatedAt: string;
     __v?: number;

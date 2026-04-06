@@ -43,15 +43,17 @@ const execute_workflow = async (req: Request, res: Response) => {
         const finalEnvelope = await runWorkflowGraph(userId, workflowPayload);
 
         return res.status(200).json({ 
+            status_response: 200,
             message: "Workflow executed successfully!",
-            finalState: finalEnvelope 
+            data: finalEnvelope 
         });
 
     } catch (error: any) {
         console.error("\n[API ERROR] execute_workflow crashed:", error);
         return res.status(500).json({ 
+            status_response: 500,
             message: "Workflow execution failed", 
-            details: error.message 
+            error: error.message 
         });
     }
 };
@@ -90,8 +92,9 @@ const saveWorkflow = async (req: Request, res: Response) => {
         }
 
         return res.status(200).json({ 
+            status_response: 200,
             message: "Workflow saved successfully", 
-            workflowId: workflow?._id ? workflow?._id : ""
+           data: {workflowId: workflow?._id ? workflow?._id : ""}
         });
 
     } catch (error: any) {
@@ -110,7 +113,11 @@ export const getWorkflow = async (req: Request, res: Response) => {
             const workflows = await Workflow.find({ userId: userId })
                 .sort({ updatedAt: -1 }); 
             
-            return res.status(200).json({ data: workflows });
+            return res.status(200).json({ 
+    status_response: 200, 
+    message: "Workflows retrieved successfully", 
+    data: workflows 
+});
         }
 
         const workflow = await Workflow.findOne({ _id: id, userId: userId });
@@ -119,7 +126,7 @@ export const getWorkflow = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Workflow not found" });
         }
 
-        return res.status(200).json({ data: workflow });
+        return res.status(200).json({status_response: 200, message: "Workflow retrieved successfully", data: workflow });
 
     } catch (error: any) {
         console.error("[API ERROR] Failed to retrieve workflow(s):", error);
