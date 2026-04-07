@@ -16,6 +16,7 @@ import {
 } from '@xyflow/react';
 
 export interface BackendNodeData {
+    [key: string]: unknown;
     service: string;
     operation: string;
     selectedAccounts: string;
@@ -59,7 +60,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   onNodesChange: (changes: NodeChange[]) => {
     console.log('[STORE] 🟢 onNodesChange Fired!', changes);
     set({
-      nodes: applyNodeChanges(changes, get().nodes),
+      nodes: applyNodeChanges(changes, get().nodes) as AppNode[],
     });
   },
 
