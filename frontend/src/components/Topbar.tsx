@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Play, Save, Loader2, Workflow, Link as LinkIcon } from 'lucide-react';
+import { Play, Save, Loader2, Workflow, Link as LinkIcon, FolderOpen } from 'lucide-react';
 import { useWorkflowStore } from '../store/workflowStore';
 import AccountsModal from './AccountsModal';
 import SaveWorkflowModal from './SaveWorkflowModal';
+import SavedWorkflowsModal from './SavedWorkflowsModal';
 import { useReactFlow } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,7 +15,8 @@ export default function Topbar() {
   
   const [isAccountsModalOpen, setIsAccountsModalOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
-  const [workflowId] = useState(() => generateWorkflowId());
+  const [isSavedWorkflowsModalOpen, setIsSavedWorkflowsModalOpen] = useState(false);
+  const [workflowId, setWorkflowId] = useState(() => generateWorkflowId());
 
   const buildPayload = () => {
     const rawNodes = getNodes();
@@ -105,6 +107,14 @@ export default function Topbar() {
         </button>
 
         <button
+          onClick={() => setIsSavedWorkflowsModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-200 rounded-lg text-sm font-medium transition-all shadow-sm focus:ring-2 focus:ring-gray-700 outline-none"
+        >
+          <FolderOpen className="w-4 h-4 text-purple-400" />
+          <span>Browse</span>
+        </button>
+
+        <button
           onClick={() => setIsSaveModalOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm font-medium transition-all"
         >
@@ -128,6 +138,11 @@ export default function Topbar() {
         onClose={() => setIsSaveModalOpen(false)}
         workflowId={workflowId}
         onSave={handleSave}
+      />
+      <SavedWorkflowsModal
+        isOpen={isSavedWorkflowsModalOpen}
+        onClose={() => setIsSavedWorkflowsModalOpen(false)}
+        onLoadWorkflow={(id) => setWorkflowId(id)}
       />
     </div>
   );

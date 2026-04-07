@@ -6,5 +6,7 @@ import authMiddleware from "../middlewares/auth-middleware";
 router.route("/execute").post(authMiddleware,workflow_controller.execute_workflow);
 router.route("/save").post(authMiddleware,workflow_controller.saveWorkflow);
 router.route("/").get(authMiddleware, workflow_controller.getWorkflow);
-router.route("/:id").get(authMiddleware, workflow_controller.getWorkflow);    
+router.route("/:id").get(authMiddleware, workflow_controller.getWorkflow);   
+router.route("/all/ids").get(authMiddleware, workflow_controller.fetchAllWorkflowIds);
+
 export default router;    

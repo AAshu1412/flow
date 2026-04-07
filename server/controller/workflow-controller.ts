@@ -158,4 +158,28 @@ const saveWorkflow = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Failed to retrieve workflow", error: error.message });
     }
 };
-export default { execute_workflow, saveWorkflow, getWorkflow };
+
+
+const fetchAllWorkflowIds = async (req: Request, res: Response) => {
+    try {
+        const userId = req.db_doc_id;
+        const workflows = await Workflow.find({ userId: userId })
+            .select('workflowId name description');
+        if (!workflows) {
+            return res.status(404).json({ message: "Workflows not found", error: "Workflows not found" });
+        }  
+        const workflowIds = workflows.map((workflow: any) => {return {workflowId: workflow.workflowId, name: workflow.name, description: workflow.description}});
+        
+        return res.status(200).json({ 
+            status_response: 200, 
+            message: "Workflows Ids retrieved successfully", 
+            data: workflowIds 
+        });
+    } catch (error: any) {
+        console.error("[API ERROR] Failed to retrieve workflow ids:", error);
+        return res.status(500).json({ message: "Failed to retrieve workflow ids", error: error.message });
+    }
+};
+
+
+export default { execute_workflow, saveWorkflow, getWorkflow, fetchAllWorkflowIds };

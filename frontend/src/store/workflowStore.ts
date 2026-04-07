@@ -12,6 +12,7 @@ interface WorkflowStoreState {
     saveWorkflow: (payload: SaveWorkflowPayload) => Promise<APIResponse<SaveWorkflowResult>>;
     getAllWorkflows: () => Promise<APIResponse<WorkflowBlueprint[]>>;
     getWorkflowById: (id: string) => Promise<APIResponse<WorkflowBlueprint>>;
+    getAllWorkflowIds: () => Promise<APIResponse<{ workflowId: string, name?: string, description?: string }[]>>;
 }
 
 export const useWorkflowStore = create<WorkflowStoreState>()(
@@ -127,6 +128,27 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
                     throw new Error(data.message || data.error || "Failed to fetch workflow");
                 } catch (error) {
                     console.error("Error fetching workflow by id:", error);
+                    throw error;
+                }
+            },
+            
+            getAllWorkflowIds: async () => {
+                try {
+                    const token = useJWTTokenStore.getState().jwtToken;
+                    if (!token) throw new Error("No token found");
+
+                    const response = await fetch(`${SERVER_URL}/api/workflow/all/ids`, {
+                        method: "GET",
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+
+                    const data = (await response.json()) as APIResponse<{ workflowId: string, name?: string, description?: string }[]>;
+                    if (response.ok && data.status_response === 200 && data.data !== undefined) {
+                        return data;
+                    }
+                    throw new Error(data.message || data.error || "Failed to fetch workflow ids");
+                } catch (error) {
+                    console.error("Error fetching workflow ids:", error);
                     throw error;
                 }
             }
