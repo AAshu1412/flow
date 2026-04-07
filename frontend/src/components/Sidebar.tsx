@@ -10,10 +10,10 @@ const getIconForService = (service: string) => {
     if (s.includes('discord')) return "https://img.icons8.com/?size=100&id=30998&format=png&color=000000";
     if (s.includes('gemini')) return "https://img.icons8.com/?size=100&id=eoxMN35Z6JKg&format=png&color=000000";
     if (s.includes('gmail')) return "https://img.icons8.com/?size=100&id=P7UIlhbpWzZm&format=png&color=000000";
-    if (s.includes('drive')) return "https://img.icons8.com/?size=100&id=yIKQNbSXxz3X&format=png&color=000000";
-    if (s.includes('doc')) return "https://img.icons8.com/?size=100&id=1CjeL8I1EwD0&format=png&color=000000";
-    if (s.includes('form')) return "https://img.icons8.com/?size=100&id=hK08c6U2u1wA&format=png&color=000000";
-    if (s.includes('meet')) return "https://img.icons8.com/?size=100&id=YQEqZg6WJ7wN&format=png&color=000000";
+    if (s.includes('drive')) return "https://img.icons8.com/?size=100&id=ya4CrqO7PgnY&format=png&color=000000";
+    if (s.includes('doc')) return "https://img.icons8.com/?size=100&id=30464&format=png&color=000000";
+    if (s.includes('form')) return "https://img.icons8.com/?size=100&id=E4VmOrv6BZqd&format=png&color=000000";
+    if (s.includes('meet')) return "https://img.icons8.com/?size=100&id=pE97I4t7Il9M&format=png&color=000000";
     if (s.includes('sheet')) return "https://img.icons8.com/?size=100&id=30461&format=png&color=000000";
     if (s.includes('notion')) return "https://img.icons8.com/?size=100&id=F6H2fsqXKBwH&format=png&color=000000";
     return "https://img.icons8.com/?size=100&id=45557&format=png&color=000000";

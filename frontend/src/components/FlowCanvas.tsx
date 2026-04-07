@@ -63,6 +63,11 @@ export default function FlowCanvas() {
     [screenToFlowPosition, setNodes, draggedType],
   );
 
+  // Delete selected edges on click
+  const onEdgeClick = useCallback((_event: React.MouseEvent, edge: any) => {
+    setEdges((eds) => eds.filter((e: any) => e.id !== edge.id));
+  }, [setEdges]);
+
   return (
     <div className="w-full h-full bg-gray-950" ref={reactFlowWrapper}>
       <ReactFlow
@@ -74,6 +79,8 @@ export default function FlowCanvas() {
         nodeTypes={nodeTypes}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        onEdgeClick={onEdgeClick}
+        deleteKeyCode={['Backspace', 'Delete']}
         fitView
       >
         <Background gap={16} size={1} color="#334155" />

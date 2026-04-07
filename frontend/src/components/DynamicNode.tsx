@@ -2,7 +2,7 @@ import { memo, useState, useEffect } from 'react';
 import { Handle, Position, useReactFlow, NodeResizeControl } from '@xyflow/react';
 import { useUserStore } from '../store/userStore';
 import { useNodeTestStore } from '../store/nodeTestStore';
-import { Loader2, Play, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Loader2, Play, Plus, X, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 
 const getIconForService = (serviceName: string) => {
@@ -15,12 +15,11 @@ const getIconForService = (serviceName: string) => {
 };
 
 const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selected: boolean }) => {
-  const { setNodes } = useReactFlow();
+  const { setNodes, setEdges } = useReactFlow();
   const { nodeProfilesCache, getNodeProfile, isProfileLoading } = useUserStore();
   const { node_test } = useNodeTestStore();
 
   const [expanded, setExpanded] = useState(false);
-  const [localTestResult, setLocalTestResult] = useState<any>(null);
   const [isLocalTesting, setIsLocalTesting] = useState(false);
   const [showTestResult, setShowTestResult] = useState(true);
   const [showPipelineOutput, setShowPipelineOutput] = useState(true);
@@ -39,12 +38,18 @@ const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selec
 
   const runTestNodeLocally = async () => {
       setIsLocalTesting(true);
-      setLocalTestResult(null);
       try {
           const res = await node_test(service, operation, selectedAccounts, inputs);
-          setLocalTestResult(res?.data || res);
+          const result = res?.data || res;
+          setNodes((nds) => nds.map(n => {
+            if (n.id === id) return { ...n, data: { ...n.data, testResult: result } };
+            return n;
+          }));
       } catch (err: any) {
-          setLocalTestResult({ error: err.message });
+          setNodes((nds) => nds.map(n => {
+            if (n.id === id) return { ...n, data: { ...n.data, testResult: { error: err.message } } };
+            return n;
+          }));
       }
       setIsLocalTesting(false);
   };
@@ -66,6 +71,11 @@ const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selec
       if (n.id === id) return { ...n, data: { ...n.data, ...partialDataPatch } };
       return n;
     }));
+  };
+
+  const deleteNode = () => {
+    setNodes((nds) => nds.filter((n) => n.id !== id));
+    setEdges((eds: any) => eds.filter((e: any) => e.source !== id && e.target !== id));
   };
 
   const addRule = () => {
@@ -296,6 +306,13 @@ const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selec
           >
              {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
+          <button 
+             onClick={deleteNode}
+             className="p-1.5 text-gray-400 hover:text-red-400 bg-gray-800 hover:bg-red-500/10 rounded-md transition-colors"
+             title="Delete node"
+          >
+             <Trash2 className="w-4 h-4" />
+          </button>
         </div>
 
         {expanded && (
@@ -315,7 +332,7 @@ const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selec
                         {isRouter ? 'Skip Test' : 'Test Node'}
                     </button>
                     
-                    {localTestResult && (
+                    {data.testResult && (
                         <div className="mt-3 bg-black border border-gray-800 rounded-md overflow-hidden">
                             <button
                               onClick={() => setShowTestResult(!showTestResult)}
@@ -326,7 +343,7 @@ const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selec
                             </button>
                             {showTestResult && (
                               <div className="px-2 pb-2 max-h-40 overflow-y-auto">
-                                <pre className="text-[10px] text-green-300 font-mono whitespace-pre-wrap">{JSON.stringify(localTestResult, null, 2)}</pre>
+                                <pre className="text-[10px] text-green-300 font-mono whitespace-pre-wrap">{JSON.stringify(data.testResult, null, 2)}</pre>
                               </div>
                             )}
                         </div>

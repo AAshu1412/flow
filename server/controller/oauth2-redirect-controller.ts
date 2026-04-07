@@ -193,7 +193,7 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
 
             // 🌟 REDIRECT TO FRONTEND (Change localhost:3000 to your actual frontend URL)
             // The React app will read the token from the URL and save it to Zustand
-            res.redirect(`http://localhost:3000/auth-success?token=${appToken}`);
+            res.redirect(`http://localhost:5173/auth-success?token=${appToken}`);
         }
     } catch (error) {
         console.error('Error during OAuth flow:', error);
