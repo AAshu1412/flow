@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { X, Link2, CheckCircle2 } from 'lucide-react';
 import { useUserStore } from '../store/userStore';
 import { useOAuthStore } from '../store/oAuthStore';
@@ -13,8 +14,8 @@ export default function AccountsModal({ isOpen, onClose }: AccountsModalProps) {
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[85vh]">
         <div className="flex items-center justify-between p-5 border-b border-gray-800 bg-gray-950/50">
           <div>
@@ -143,6 +144,7 @@ export default function AccountsModal({ isOpen, onClose }: AccountsModalProps) {
              </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

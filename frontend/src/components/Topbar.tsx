@@ -21,7 +21,13 @@ export default function Topbar() {
     const rawEdges = getEdges();
     
     const nodesRecord: Record<string, any> = {};
-    rawNodes.forEach(rn => { nodesRecord[rn.id] = rn.data; });
+    rawNodes.forEach(rn => {
+      nodesRecord[rn.id] = {
+        ...rn.data,
+        id: rn.id,
+        position: rn.position
+      };
+    });
 
     const triggerNodeId = Object.keys(nodesRecord).find(
       id => nodesRecord[id].service === 'core' && nodesRecord[id].operation === 'manual_input'

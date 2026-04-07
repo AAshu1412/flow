@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Save, Loader2, AlertTriangle, Lock } from 'lucide-react';
 
 interface SaveWorkflowModalProps {
@@ -32,8 +33,8 @@ export default function SaveWorkflowModal({ isOpen, onClose, workflowId, onSave 
     setIsSaving(false);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="w-full max-w-md bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-gray-800">
@@ -124,6 +125,7 @@ export default function SaveWorkflowModal({ isOpen, onClose, workflowId, onSave 
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
