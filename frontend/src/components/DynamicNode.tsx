@@ -1,8 +1,9 @@
 import { memo, useState, useEffect } from 'react';
-import { Handle, Position, useReactFlow } from '@xyflow/react';
+import { Handle, Position, useReactFlow, NodeResizeControl } from '@xyflow/react';
 import { useUserStore } from '../store/userStore';
 import { useNodeTestStore } from '../store/nodeTestStore';
 import { Loader2, Play, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
+import VariablePicker from './VariablePicker';
 
 const getIconForService = (serviceName: string) => {
   const customLogos: Record<string, string> = {
@@ -21,6 +22,8 @@ const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selec
   const [expanded, setExpanded] = useState(false);
   const [localTestResult, setLocalTestResult] = useState<any>(null);
   const [isLocalTesting, setIsLocalTesting] = useState(false);
+  const [showTestResult, setShowTestResult] = useState(true);
+  const [showPipelineOutput, setShowPipelineOutput] = useState(true);
 
   const { service, operation, inputs = {}, selectedAccounts = '' } = data;
   const isRouter = operation === 'router';
@@ -212,12 +215,31 @@ const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selec
                                 placeholder={`Enter amount...`}
                             />
                         ) : (
-                            <textarea 
-                                className="w-full min-h-16 bg-gray-900 border border-gray-700 rounded-md p-1.5 text-white outline-none focus:border-blue-500 font-mono text-[10px] resize-y"
-                                placeholder={`...`}
-                                value={value}
-                                onChange={(e) => handleInputChange(input.key, e.target.value)}
-                            />
+                            <div className="relative">
+                              <textarea 
+                                  id={`textarea-${id}-${input.key}`}
+                                  className="w-full min-h-16 bg-gray-900 border border-gray-700 rounded-md p-1.5 text-white outline-none focus:border-blue-500 font-mono text-[10px] resize-y"
+                                  placeholder={`...`}
+                                  value={value}
+                                  onChange={(e) => handleInputChange(input.key, e.target.value)}
+                              />
+                              <div className="absolute top-0 right-0 mt-0.5 mr-0.5">
+                                <VariablePicker
+                                  currentNodeId={id}
+                                  onInsert={(variable) => {
+                                    const el = document.getElementById(`textarea-${id}-${input.key}`) as HTMLTextAreaElement | null;
+                                    if (el) {
+                                      const start = el.selectionStart ?? value.length;
+                                      const end = el.selectionEnd ?? value.length;
+                                      const newValue = value.slice(0, start) + variable + value.slice(end);
+                                      handleInputChange(input.key, newValue);
+                                    } else {
+                                      handleInputChange(input.key, value + variable);
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
                         )}
                     </div>
                 );
@@ -228,9 +250,22 @@ const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selec
 
   return (
     <div className={`
-       relative min-w-[280px] w-[320px] rounded-xl border border-gray-800 bg-gray-950/95 backdrop-blur-xl shadow-2xl transition-[border-color,box-shadow] duration-200
+       relative min-w-[280px] rounded-xl border border-gray-800 bg-gray-950/95 backdrop-blur-xl shadow-2xl transition-[border-color,box-shadow] duration-200
        ${selected ? 'ring-2 ring-blue-500 border-blue-500 shadow-blue-500/20' : 'hover:border-gray-700 hover:shadow-xl'}
-    `}>
+    `} style={{ width: '100%' }}>
+      {selected && (
+        <NodeResizeControl
+          minWidth={280}
+          maxWidth={600}
+          minHeight={60}
+          style={{ background: 'transparent', border: 'none' }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', right: 4, bottom: 4 }}>
+            <polyline points="16 20 20 20 20 16" />
+            <line x1="14" y1="22" x2="22" y2="14" />
+          </svg>
+        </NodeResizeControl>
+      )}
       <Handle 
         type="target" 
         position={Position.Left} 
@@ -281,9 +316,36 @@ const DynamicNode = memo(({ id, data, selected }: { id: string; data: any; selec
                     </button>
                     
                     {localTestResult && (
-                        <div className="mt-3 bg-black border border-gray-800 rounded-md p-2 max-h-40 overflow-y-auto">
-                            <span className="text-[10px] text-green-400 font-semibold uppercase block mb-1">Result</span>
-                            <pre className="text-[10px] text-green-300 font-mono whitespace-pre-wrap">{JSON.stringify(localTestResult, null, 2)}</pre>
+                        <div className="mt-3 bg-black border border-gray-800 rounded-md overflow-hidden">
+                            <button
+                              onClick={() => setShowTestResult(!showTestResult)}
+                              className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-gray-900 transition-colors"
+                            >
+                              <span className="text-[10px] text-green-400 font-semibold uppercase">Test Result</span>
+                              {showTestResult ? <ChevronUp className="w-3 h-3 text-green-400" /> : <ChevronDown className="w-3 h-3 text-green-400" />}
+                            </button>
+                            {showTestResult && (
+                              <div className="px-2 pb-2 max-h-40 overflow-y-auto">
+                                <pre className="text-[10px] text-green-300 font-mono whitespace-pre-wrap">{JSON.stringify(localTestResult, null, 2)}</pre>
+                              </div>
+                            )}
+                        </div>
+                    )}
+
+                    {data.lastRunOutput !== undefined && (
+                        <div className="mt-3 bg-gray-950 border border-blue-500/30 rounded-md overflow-hidden">
+                            <button
+                              onClick={() => setShowPipelineOutput(!showPipelineOutput)}
+                              className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-gray-900 transition-colors"
+                            >
+                              <span className="text-[10px] text-blue-400 font-semibold uppercase">Pipeline Output</span>
+                              {showPipelineOutput ? <ChevronUp className="w-3 h-3 text-blue-400" /> : <ChevronDown className="w-3 h-3 text-blue-400" />}
+                            </button>
+                            {showPipelineOutput && (
+                              <div className="px-2 pb-2 max-h-40 overflow-y-auto">
+                                <pre className="text-[10px] text-blue-300 font-mono whitespace-pre-wrap">{JSON.stringify(data.lastRunOutput, null, 2)}</pre>
+                              </div>
+                            )}
                         </div>
                     )}
                </div>

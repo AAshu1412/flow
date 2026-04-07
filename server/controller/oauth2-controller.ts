@@ -99,7 +99,7 @@ const discord_authenticate = async (req: Request, res: Response) => {
     try {
         // -- ASHU
 
-        const userId = req.db_doc_id;
+       const userId = req.db_doc_id;
 
         // -- ASHU 
 

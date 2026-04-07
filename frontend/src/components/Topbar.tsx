@@ -6,7 +6,7 @@ import { useReactFlow } from '@xyflow/react';
 
 export default function Topbar() {
   const { isExecuting, execute_workflow } = useWorkflowStore();
-  const { getNodes, getEdges } = useReactFlow();
+  const { getNodes, getEdges, setNodes } = useReactFlow();
   
   const [isAccountsModalOpen, setIsAccountsModalOpen] = useState(false);
 
@@ -25,12 +25,23 @@ export default function Topbar() {
     const triggerNodeId = Object.keys(payload.nodes).find(id => payload.nodes[id].service === 'core' && payload.nodes[id].operation === 'manual_input') || Object.keys(payload.nodes)[0];
 
     try {
-      await execute_workflow({
+      const result = await execute_workflow({
         workflowId: `workflow_${Date.now()}`,
         triggerNodeId: triggerNodeId,
         nodes: payload.nodes,
         edges: payload.edges.map(e => ({ ...e, sourceHandle: e.sourceHandle ?? undefined, targetHandle: e.targetHandle ?? undefined })),
       });
+
+      // Inject pipeline results back into each node's data for UI display & Variable Picker
+      const envelope = result.data;
+      if (envelope && typeof envelope === 'object') {
+        setNodes((nds: any) => nds.map((n: any) => {
+          if (envelope[n.id] !== undefined) {
+            return { ...n, data: { ...n.data, lastRunOutput: envelope[n.id] } };
+          }
+          return n;
+        }));
+      }
     } catch (err) {
       console.error('[DEBUG] <Topbar> Error during execute_workflow:', err);
     }
