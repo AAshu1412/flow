@@ -22,6 +22,7 @@ const edgeSchema = new Schema({
 // --- Main Workflow Schema ---
 const workflowSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    workflowId: { type: String, required: true, unique: true }, 
     name: { type: String, default: 'Untitled Workflow' },
     triggerNodeId: { type: String, required: false },
     nodes: { type: Map, of: nodeSchema, default: {} },

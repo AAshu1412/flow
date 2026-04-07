@@ -39,6 +39,7 @@ export interface IWorkflowEdge {
 
 export interface IWorkflow extends Document {
     userId: Types.ObjectId;
+    workflowId: string;
     name: string;
     triggerNodeId?: string;
     nodes: Map<string, IWorkflowNode>;

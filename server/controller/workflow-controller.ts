@@ -63,23 +63,32 @@ console.log("Execute Output: "+JSON.stringify(finalEnvelope));
 const saveWorkflow = async (req: Request, res: Response) => {
     try {
         const userId = req.db_doc_id;
-        const { workflowId, name, triggerNodeId, nodes, edges, isActive, description  } = req.body;
+        const { workflowId, name, triggerNodeId, nodes, edges, isActive, description } = req.body;
 
-        // if (!triggerNodeId || !nodes) {
+        if (!workflowId) {
+            return res.status(400).json({ message: "workflowId is required." });
+        }
+
         if (!nodes || Object.keys(nodes).length === 0) {
             return res.status(400).json({ message: "Missing required workflow data." });
         }
 
-        let workflow;
+        // 2. Search by the custom frontend UUID, NOT the Mongo _id
+        let workflow = await Workflow.findOne({ workflowId: workflowId });
 
-        if (workflowId) {
+        if (workflow) {
+            if (workflow.userId.toString() !== userId.toString()) {
+                return res.status(403).json({ message: "Unauthorized to edit this workflow." });
+            }
+
             workflow = await Workflow.findOneAndUpdate(
-                { _id: workflowId, userId: userId }, // Security: Ensure they own it!
+                { workflowId: workflowId }, 
                 { name, triggerNodeId, nodes, edges, isActive, description },
                 { new: true }
             );
         } else {
             workflow = await Workflow.create({
+                workflowId: workflowId, 
                 userId,
                 name: name || "Untitled Workflow",
                 triggerNodeId,
@@ -88,16 +97,27 @@ const saveWorkflow = async (req: Request, res: Response) => {
                 isActive: isActive || false,
                 description: description || ""
             });
+            
             await User.findByIdAndUpdate(userId, {
                 $push: { workflow_connections: workflow._id }
             });
         }
 
-        return res.status(200).json({ 
+        if (workflow){
+ return res.status(200).json({ 
             status_response: 200,
             message: "Workflow saved successfully", 
-           data: {workflowId: workflow?._id ? workflow?._id : ""}
+            data: { workflowId:  workflow.workflowId }
         });
+        } else{
+             return res.status(500).json({ 
+            status_response: 500,
+            message: "Failed to save workflow", 
+            error: "Workflow not found"
+        });
+        }
+
+       
 
     } catch (error: any) {
         console.error("[API ERROR] Failed to save workflow:", error);
@@ -105,40 +125,37 @@ const saveWorkflow = async (req: Request, res: Response) => {
     }
 };
 
-export const getWorkflow = async (req: Request, res: Response) => {
+ const getWorkflow = async (req: Request, res: Response) => {
     try {
         const userId = req.db_doc_id;
-        const { id } = req.params;
+        const { id } = req.params; // This is now the UUID string from the frontend
 
         if (!id || id === "all" || id === "/" || (typeof id === "string" && id.trim() === "")) {
-            
             const workflows = await Workflow.find({ userId: userId })
                 .sort({ updatedAt: -1 }); 
             
             return res.status(200).json({ 
-    status_response: 200, 
-    message: "Workflows retrieved successfully", 
-    data: workflows 
-});
+                status_response: 200, 
+                message: "Workflows retrieved successfully", 
+                data: workflows 
+            });
         }
 
-        const workflow = await Workflow.findOne({ _id: id, userId: userId });
+        const workflow = await Workflow.findOne({ workflowId: id, userId: userId });
 
         if (!workflow) {
             return res.status(404).json({ message: "Workflow not found" });
         }
 
-        return res.status(200).json({status_response: 200, message: "Workflow retrieved successfully", data: workflow });
+        return res.status(200).json({ 
+            status_response: 200, 
+            message: "Workflow retrieved successfully", 
+            data: workflow 
+        });
 
     } catch (error: any) {
         console.error("[API ERROR] Failed to retrieve workflow(s):", error);
-        
-        if (error.name === 'CastError') {
-            return res.status(400).json({ message: "Invalid workflow ID format" });
-        }
-        
         return res.status(500).json({ message: "Failed to retrieve workflow", error: error.message });
     }
 };
-
 export default { execute_workflow, saveWorkflow, getWorkflow };

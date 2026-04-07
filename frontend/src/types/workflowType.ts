@@ -9,6 +9,7 @@
  */
 export interface WorkflowSummary {
     _id: string;
+    workflowId: string;
     userId: string;
     name: string;
     isActive: boolean;
@@ -61,7 +62,7 @@ export type WorkflowExecutionResult = Record<string, any>;
 
 
 export interface SaveWorkflowPayload {
-    workflowId?: string;
+    workflowId: string;
     name?: string;
     triggerNodeId?: string;
     nodes: Record<string, WorkflowNode>;
