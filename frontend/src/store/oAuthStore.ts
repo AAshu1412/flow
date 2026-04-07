@@ -12,7 +12,7 @@ interface OAuthStoreState {
 
 export const useOAuthStore = create<OAuthStoreState>()(
     devtools(
-        (set) => ({
+        () => ({
             loginWithGoogle: () => {
                 // Primary login requires no token
                 window.location.href = `${SERVER_URL}/api/auth/google`;

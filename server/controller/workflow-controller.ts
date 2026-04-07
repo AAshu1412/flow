@@ -34,6 +34,8 @@ const execute_workflow = async (req: Request, res: Response) => {
     try {
         const userId = req.db_doc_id; 
         const workflowPayload: WorkflowPayload = req.body;
+        console.log("*****************************")
+        console.log("payload: "+JSON.stringify(workflowPayload))
 
         // Validation updated: We only care that nodes exist!
         if (!workflowPayload.nodes || Object.keys(workflowPayload.nodes).length === 0) {

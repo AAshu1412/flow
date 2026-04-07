@@ -52,6 +52,7 @@ export interface WorkflowBlueprint extends WorkflowSummary {
 
 export interface WorkflowExecutionPayload {
     workflowId?: string;
+    triggerNodeId?: string;
     nodes: Record<string, WorkflowNode>;
     edges: WorkflowEdge[];
 }
