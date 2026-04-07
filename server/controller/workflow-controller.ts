@@ -43,7 +43,7 @@ const execute_workflow = async (req: Request, res: Response) => {
         }
 
         const finalEnvelope = await runWorkflowGraph(userId, workflowPayload);
-
+console.log("Execute Output: "+JSON.stringify(finalEnvelope));
         return res.status(200).json({ 
             status_response: 200,
             message: "Workflow executed successfully!",

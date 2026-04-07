@@ -248,11 +248,8 @@ export function evaluateJavaScript(code: string, envelope: Record<string, any>):
 export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload: WorkflowPayload) => {
     console.log(`\n========== STARTING WORKFLOW: ${payload.workflowId || 'test_run'} ==========`);
     
-    // 1. The Universal Data Envelope (Stores state)
     const envelope: Record<string, any> = {};
     
-    // 2. AUTO-DETECT STARTING NODES
-    // A starting node is any node that is NEVER listed as a "target" in the edges array.
     const allNodeIds = Object.keys(payload.nodes);
     const targetNodeIds = new Set(payload.edges.map(e => e.target));
     const startingNodes = allNodeIds.filter(id => !targetNodeIds.has(id));
@@ -263,12 +260,7 @@ export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload:
 
     console.log(`[ENGINE] Auto-detected starting nodes:`, startingNodes);
 
-    // 3. The Execution Queue & Protection Set
     const queue: string[] = [...startingNodes];
-    
-    // 🌟 THE FIX FOR 3-to-1 CONVERGENCE:
-    // This Set keeps track of nodes that have already been queued so we don't execute 
-    // the target node 3 separate times when A, B, and C all connect to D.
     const enqueued = new Set<string>(startingNodes);
 
     while (queue.length > 0) {
@@ -280,14 +272,12 @@ export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload:
             continue;
         }
 
-        console.log(`\n[->] Processing Node: ${node.id} (${node.service}:${node.operation})`);
+        console.log(`\n[->] Processing Node: ${node.id || currentNodeId} (${node.service}:${node.operation})`);
 
-        // 4. Evaluate Expressions (Inject real data into inputs)
         const parsedInputs = evaluateInputs(node.inputs, envelope);
         let matchedHandle = "default"; 
 
         try {
-            // 5. Execution Logic
             if (node.service === "core" && node.operation === "router") {
                 console.log(`[ROUTER] Evaluating Rules...`);
                 matchedHandle = evaluateRouter(parsedInputs.rules, parsedInputs.fallbackHandle);
@@ -304,7 +294,6 @@ export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload:
                 envelope[currentNodeId] = result;
             }
 
-            // 6. Find Next Steps (Graph Traversal)
             const outgoingEdges = payload.edges.filter(e => e.source === currentNodeId);
             
             for (const edge of outgoingEdges) {
@@ -316,16 +305,24 @@ export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload:
                     shouldFollowEdge = true;
                 }
 
-                // If the edge is valid, AND the target node hasn't been queued yet, add it!
                 if (shouldFollowEdge && !enqueued.has(edge.target)) {
                     queue.push(edge.target);
-                    enqueued.add(edge.target); // Mark as queued so it doesn't run twice
+                    enqueued.add(edge.target); 
                 }
             }
 
         } catch (error: any) {
-            console.error(`[ERROR] Node ${node.id} failed:`, error.message);
-            throw error; 
+            console.error(`[ERROR] Node ${currentNodeId} failed:`, error.message);
+            
+            // 🌟 THE FIX: Instead of throwing and crashing, save the error to the envelope!
+            envelope[currentNodeId] = {
+                _execution_error: true, // A flag so your frontend knows this node failed
+                error_message: error.message
+            };
+            
+            // Break the loop! We don't want to run the next node if this one failed.
+            console.log(`[ENGINE] Halting workflow execution due to node failure.`);
+            break; 
         }
     }
 
