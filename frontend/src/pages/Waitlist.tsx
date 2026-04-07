@@ -43,7 +43,7 @@ export default function Waitlist() {
         <div className="min-h-screen flex items-center justify-center bg-gray-950 p-4">
             <div className="w-full max-w-md">
                 <div className="text-center mb-10">
-                    <h1 className="text-4xl font-bold text-white mb-4 tracking-tight">Nexus Flow</h1>
+                    <h1 className="text-4xl font-bold text-white mb-4 tracking-tight">Flow</h1>
                     <p className="text-lg text-gray-400">Join the waitlist for early access to the next generation of automation.</p>
                 </div>
 

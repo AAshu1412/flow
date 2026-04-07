@@ -64,7 +64,7 @@ export default function SaveWorkflowModal({ isOpen, onClose, workflowId, onSave 
               <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-[10px] text-amber-300/80 leading-relaxed">
                 This ID is <strong>permanent and unique</strong>. It was auto-generated when you started this workflow. 
-                Once saved, it cannot be changed. The ID near "Nexus Flow" in the topbar is for display only during this session — 
+                Once saved, it cannot be changed. The ID near "Flow" in the topbar is for display only during this session — 
                 it does <strong>not</strong> change the saved workflow ID. If you need a different ID, create a new workflow.
               </p>
             </div>

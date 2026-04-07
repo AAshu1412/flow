@@ -86,7 +86,7 @@ export default function Topbar() {
       <div className="flex items-center gap-4">
          <div className="flex items-center gap-2 pr-4 border-r border-gray-800">
              <Workflow className="w-5 h-5 text-blue-500" />
-             <h1 className="font-bold text-gray-100 tracking-wide">Nexus Flow</h1>
+             <h1 className="font-bold text-gray-100 tracking-wide">Flow</h1>
          </div>
          {/* Workflow ID display (read-only) */}
          <div className="flex items-center gap-2">
