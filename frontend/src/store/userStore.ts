@@ -17,6 +17,7 @@ interface UserStoreState {
     nodeProfile: FrontendNodeProfile | null;
     nodeProfilesCache: Record<string, FrontendNodeProfile>;
     getNodeProfile: (service: string, operation: string) => Promise<APIResponse<FrontendNodeProfile | null>>;
+    waitlistRequest: (email: string) => Promise<boolean>;
 }
 
 export const useUserStore = create<UserStoreState>()(
@@ -137,8 +138,30 @@ export const useUserStore = create<UserStoreState>()(
                     throw error;
                 }
 
-            }
+            },
+            waitlistRequest: async (email: string): Promise<boolean> => {
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/waitlist/request`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            email
+                        }),
+                    });
 
+                    if (response.status === 409) {
+                        return true;
+                    }
+
+                    await response.json();
+                    return false;
+                } catch (error) {
+                    console.error("Error requesting waitlist:", error);
+                    return false;
+                }
+            },
         }),
         { name: "UserStore" }
     )
