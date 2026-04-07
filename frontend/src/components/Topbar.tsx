@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Play, Save, Loader2, Workflow, Link as LinkIcon, FolderOpen } from 'lucide-react';
+import { Play, Save, Loader2, Workflow, Link as LinkIcon, FolderOpen, UserCircle2 } from 'lucide-react';
 import { useWorkflowStore } from '../store/workflowStore';
+import { useUserStore } from '../store/userStore';
 import AccountsModal from './AccountsModal';
 import SaveWorkflowModal from './SaveWorkflowModal';
 import SavedWorkflowsModal from './SavedWorkflowsModal';
+import UserProfileModal from './UserProfileModal';
 import { useReactFlow } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,12 +13,20 @@ const generateWorkflowId = () => `wf_${uuidv4()}`;
 
 export default function Topbar() {
   const { isExecuting, execute_workflow, saveWorkflow } = useWorkflowStore();
+  const { user, getUser } = useUserStore();
   const { getNodes, getEdges, setNodes } = useReactFlow();
   
   const [isAccountsModalOpen, setIsAccountsModalOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [isSavedWorkflowsModalOpen, setIsSavedWorkflowsModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [workflowId, setWorkflowId] = useState(() => generateWorkflowId());
+
+  useEffect(() => {
+    if (!user) {
+      getUser().catch(console.error);
+    }
+  }, [user, getUser]);
 
   const buildPayload = () => {
     const rawNodes = getNodes();
@@ -130,6 +140,26 @@ export default function Topbar() {
           {isExecuting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
           <span>Run Workflow</span>
         </button>
+
+        {/* Profile Avatar / Button */}
+        <div className="relative group ml-2">
+           <button 
+             onClick={() => setIsProfileModalOpen(true)}
+             className="w-9 h-9 rounded-full border border-gray-700 hover:border-gray-500 bg-gray-800 flex items-center justify-center overflow-hidden transition-all outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+           >
+              {user?.picture ? (
+                 <img src={user.picture} alt={user.name || 'User'} className="w-full h-full object-cover" />
+              ) : (
+                 <UserCircle2 className="w-5 h-5 text-gray-400" />
+              )}
+           </button>
+           
+           {user?.name && (
+             <div className="absolute top-12 right-0 mt-1 px-3 py-1.5 bg-gray-900 border border-gray-800 rounded-md text-xs font-semibold text-gray-200 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
+                {user.name}
+             </div>
+           )}
+        </div>
       </div>
 
       <AccountsModal isOpen={isAccountsModalOpen} onClose={() => setIsAccountsModalOpen(false)} />
@@ -143,6 +173,11 @@ export default function Topbar() {
         isOpen={isSavedWorkflowsModalOpen}
         onClose={() => setIsSavedWorkflowsModalOpen(false)}
         onLoadWorkflow={(id) => setWorkflowId(id)}
+      />
+      <UserProfileModal 
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={user}
       />
     </div>
   );
