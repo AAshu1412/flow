@@ -7,7 +7,7 @@ import { useReactFlow } from '@xyflow/react';
 interface SavedWorkflowsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoadWorkflow: (workflowId: string) => void;
+  onLoadWorkflow: (workflowId: string, name: string, description: string) => void;
 }
 
 export default function SavedWorkflowsModal({ isOpen, onClose, onLoadWorkflow }: SavedWorkflowsModalProps) {
@@ -70,7 +70,7 @@ export default function SavedWorkflowsModal({ isOpen, onClose, onLoadWorkflow }:
         setNodes(mappedNodes);
         setEdges(mappedEdges);
         
-        onLoadWorkflow(data.workflowId || workflowId);
+        onLoadWorkflow(data.workflowId || workflowId, data.name, data.description);
         onClose();
       }
     } catch (err: any) {

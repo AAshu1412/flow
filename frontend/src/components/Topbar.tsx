@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, Save, Loader2, Workflow, Link as LinkIcon, FolderOpen, UserCircle2 } from 'lucide-react';
+import { Play, Save, Loader2, Workflow, Link as LinkIcon, FolderOpen, UserCircle2, MoreVertical, CheckCircle2 } from 'lucide-react';
 import { useWorkflowStore } from '../store/workflowStore';
 import { useUserStore } from '../store/userStore';
 import AccountsModal from './AccountsModal';
@@ -21,6 +21,12 @@ export default function Topbar() {
   const [isSavedWorkflowsModalOpen, setIsSavedWorkflowsModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [workflowId, setWorkflowId] = useState(() => generateWorkflowId());
+  
+  const [workflowName, setWorkflowName] = useState<string>('');
+  const [workflowDescription, setWorkflowDescription] = useState<string>('');
+  const [isExistingWorkflow, setIsExistingWorkflow] = useState(false);
+  const [isQuickSaving, setIsQuickSaving] = useState(false);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -89,6 +95,31 @@ export default function Topbar() {
       nodes: payload.nodes,
       edges: payload.edges,
     });
+    
+    setWorkflowName(saveData.name);
+    setWorkflowDescription(saveData.description);
+    setIsExistingWorkflow(true);
+  };
+
+  const handleQuickSave = async () => {
+    setIsQuickSaving(true);
+    try {
+      const payload = buildPayload();
+      await saveWorkflow({
+        workflowId: payload.workflowId,
+        name: workflowName,
+        description: workflowDescription,
+        triggerNodeId: payload.triggerNodeId,
+        nodes: payload.nodes,
+        edges: payload.edges,
+      });
+      setShowSaveSuccess(true);
+      setTimeout(() => setShowSaveSuccess(false), 2000);
+    } catch (err) {
+      console.error("[DEBUG] <Topbar> Failed to quick save:", err);
+    } finally {
+      setIsQuickSaving(false);
+    }
   };
 
   return (
@@ -124,13 +155,44 @@ export default function Topbar() {
           <span>Browse</span>
         </button>
 
-        <button
-          onClick={() => setIsSaveModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm font-medium transition-all"
-        >
-          <Save className="w-4 h-4" />
-          <span>Save</span>
-        </button>
+        {isExistingWorkflow ? (
+           <div className="flex items-center rounded-lg bg-gray-900 border border-gray-700 divide-x divide-gray-700 shadow-sm transition-all focus-within:ring-2 focus-within:ring-gray-700 relative group overflow-hidden">
+             {/* Invisible Tooltip for preventing auto-save assumptions */}
+             <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-gray-800 border border-gray-700 rounded-md text-[10px] text-gray-300 font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-lg">
+                Manual Update
+             </div>
+             
+             <button
+               onClick={handleQuickSave}
+               disabled={isQuickSaving}
+               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-800 text-gray-200 text-sm font-medium transition-colors disabled:opacity-50"
+             >
+               {isQuickSaving ? (
+                 <Loader2 className="w-4 h-4 text-purple-400 font-bold animate-spin" />
+               ) : showSaveSuccess ? (
+                 <CheckCircle2 className="w-4 h-4 text-emerald-500 font-bold" />
+               ) : (
+                 <Save className="w-4 h-4 text-purple-400 font-bold" />
+               )}
+               <span className="pr-1">{showSaveSuccess ? 'Saved' : 'Update'}</span>
+             </button>
+             <button
+               onClick={() => setIsSaveModalOpen(true)}
+               title="Edit details or Save As"
+               className="flex items-center px-2 py-2 hover:bg-gray-800 text-gray-400 hover:text-gray-200 transition-colors"
+             >
+               <MoreVertical className="w-4 h-4" />
+             </button>
+           </div>
+        ) : (
+          <button
+            onClick={() => setIsSaveModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm font-medium transition-all"
+          >
+            <Save className="w-4 h-4" />
+            <span>Save</span>
+          </button>
+        )}
 
         <button 
           onClick={handleRun}
@@ -172,7 +234,12 @@ export default function Topbar() {
       <SavedWorkflowsModal
         isOpen={isSavedWorkflowsModalOpen}
         onClose={() => setIsSavedWorkflowsModalOpen(false)}
-        onLoadWorkflow={(id) => setWorkflowId(id)}
+        onLoadWorkflow={(id, name, desc) => {
+          setWorkflowId(id);
+          setWorkflowName(name || '');
+          setWorkflowDescription(desc || '');
+          setIsExistingWorkflow(true);
+        }}
       />
       <UserProfileModal 
         isOpen={isProfileModalOpen}
