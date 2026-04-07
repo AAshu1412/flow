@@ -30,6 +30,8 @@ import { User } from "../models/user-model";
 //     }
 // };
 
+
+
 const execute_workflow = async (req: Request, res: Response) => {
     try {
         const userId = req.db_doc_id; 
@@ -44,6 +46,20 @@ const execute_workflow = async (req: Request, res: Response) => {
 
         const finalEnvelope = await runWorkflowGraph(userId, workflowPayload);
 console.log("Execute Output: "+JSON.stringify(finalEnvelope));
+
+// -- ASHU
+ const hasPartialFailure = Object.values(finalEnvelope).some(
+            (nodeResult: any) => nodeResult && nodeResult._execution_error === true
+        );
+
+        if (hasPartialFailure) {
+            return res.status(400).json({  
+                status_response: 400,
+                message: "Workflow stopped because a node failed.",
+                data: finalEnvelope 
+            });
+        }
+// --- ASHU
         return res.status(200).json({ 
             status_response: 200,
             message: "Workflow executed successfully!",

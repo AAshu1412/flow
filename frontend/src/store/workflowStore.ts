@@ -48,8 +48,13 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
 
                     const data = (await response.json()) as APIResponse<WorkflowExecutionResult>;
 
-                    if (response.ok && data.status_response === 200 && data.data !== undefined) {
+                    if (data.data !== undefined) {
                         set({ isExecuting: false, lastResult: data.data });
+                        return data;
+                    }
+
+                    if (response.ok && data.status_response === 200) {
+                        set({ isExecuting: false });
                         return data;
                     }
 

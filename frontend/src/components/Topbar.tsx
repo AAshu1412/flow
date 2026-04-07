@@ -27,6 +27,7 @@ export default function Topbar() {
   const [isExistingWorkflow, setIsExistingWorkflow] = useState(false);
   const [isQuickSaving, setIsQuickSaving] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [lastRunStatus, setLastRunStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     if (!user) {
@@ -66,10 +67,12 @@ export default function Topbar() {
   const handleRun = async () => {
     const payload = buildPayload();
     console.log('[DEBUG] <Topbar> Run workflow:', payload.workflowId);
+    
+    setLastRunStatus('idle');
 
     try {
       const result = await execute_workflow(payload);
-
+      
       const envelope = result.data;
       if (envelope && typeof envelope === 'object') {
         setNodes((nds: any) => nds.map((n: any) => {
@@ -79,7 +82,14 @@ export default function Topbar() {
           return n;
         }));
       }
+      
+      if (result.status_response === 200) {
+        setLastRunStatus('success');
+      } else {
+        setLastRunStatus('error');
+      }
     } catch (err) {
+      setLastRunStatus('error');
       console.error('[DEBUG] <Topbar> Error during execute_workflow:', err);
     }
   };
@@ -194,14 +204,27 @@ export default function Topbar() {
           </button>
         )}
 
-        <button 
-          onClick={handleRun}
-          disabled={isExecuting}
-          className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isExecuting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
-          <span>Run Workflow</span>
-        </button>
+        <div className="flex items-center gap-2">
+           <button 
+             onClick={handleRun}
+             disabled={isExecuting}
+             className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+           >
+             {isExecuting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
+             <span>Run Workflow</span>
+           </button>
+           
+           {/* Status Indicator */}
+           <div className="flex items-center justify-center w-6 h-6">
+             {isExecuting ? (
+               <div className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" title="Running..." />
+             ) : lastRunStatus === 'success' ? (
+               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" title="Execution successful" />
+             ) : lastRunStatus === 'error' ? (
+               <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" title="Execution failed manually check nodes" />
+             ) : null}
+           </div>
+        </div>
 
         {/* Profile Avatar / Button */}
         <div className="relative group ml-2">
