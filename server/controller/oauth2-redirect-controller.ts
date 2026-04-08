@@ -124,7 +124,7 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
                 client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
                 grant_type: 'authorization_code',
                 code: code,
-                redirect_uri: "http://localhost:5001/api/auth/google/callback"
+                redirect_uri: process.env.GOOGLE_REDIRECT_URI as string
             })
         });
 
@@ -193,7 +193,7 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
 
             // 🌟 REDIRECT TO FRONTEND (Change localhost:3000 to your actual frontend URL)
             // The React app will read the token from the URL and save it to Zustand
-            res.redirect(`http://localhost:5173/auth-success?token=${appToken}`);
+            res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${appToken}`);
         }
     } catch (error) {
         console.error('Error during OAuth flow:', error);
@@ -226,7 +226,7 @@ const notion_authenticate_callback = async (req: Request, res: Response) => {
             body: JSON.stringify({
                 grant_type: 'authorization_code',
                 code: code,
-                redirect_uri: "http://localhost:5001/api/auth/notion/callback"
+                redirect_uri: process.env.NOTION_REDIRECT_URI as string
             })
         });
 
@@ -326,7 +326,7 @@ const discord_authenticate_callback = async (req: Request, res: Response) => {
                 client_secret: process.env.DISCORD_CLIENT_SECRET as string,
                 grant_type: 'authorization_code',
                 code: code,
-                redirect_uri: "http://localhost:5001/api/auth/discord/callback"
+                redirect_uri: process.env.DISCORD_REDIRECT_URI as string
             })
         });
 

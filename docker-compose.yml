@@ -5,6 +5,7 @@ services:
     build:
       context: ./frontend
       args:
+        # INJECTS THE BACKEND URL DURING BUILD
         - VITE_SERVER_URL=http://localhost:5001 
     container_name: flow-auto-frontend
     ports:
@@ -21,6 +22,7 @@ services:
     container_name: flow-auto-backend
     ports:
       - "5001:5001"
+    # PASSES YOUR SECRETS TO THE CONTAINER AT RUNTIME
     env_file:
       - ./server/.env 
     environment:

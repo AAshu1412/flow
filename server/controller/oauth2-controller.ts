@@ -53,7 +53,7 @@ export const google_authenticate = async (req: Request, res: Response) => {
         ];
 
         const scopeString = encodeURIComponent(scopes.join(' '));
-        const redirectUri = encodeURIComponent("http://localhost:5001/api/auth/google/callback");
+        const redirectUri = encodeURIComponent(process.env.GOOGLE_REDIRECT_URI as string);
         let userIdState = "login";
 
         if (req.query.token) {
@@ -85,7 +85,7 @@ const notion_authenticate = async (req: Request, res: Response) => {
         // -- ASHU 
 
 
-        const url = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_CLIENT_ID}&redirect_uri=${encodeURIComponent("http://localhost:5001/api/auth/notion/callback")}&response_type=code&state=${userId}`;
+        const url = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.NOTION_REDIRECT_URI as string)}&response_type=code&state=${userId}`;
         res.redirect(url);
     }
     catch (error: any) {
@@ -111,7 +111,7 @@ const discord_authenticate = async (req: Request, res: Response) => {
         ];
 
         const scopeString = encodeURIComponent(scopes.join(' '));
-        const redirectUri = encodeURIComponent("http://localhost:5001/api/auth/discord/callback");
+        const redirectUri = encodeURIComponent(process.env.DISCORD_REDIRECT_URI as string);
 
         // 3. Define the Bot Permissions your workflow needs
         // 1024 (View Channels) + 2048 (Send Messages) = 3072

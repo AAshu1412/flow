@@ -6,3 +6,4 @@ workflow.json
 frontend_idea.ts
 dist
 dist/
+secret.txt
