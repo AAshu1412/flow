@@ -1,16 +1,18 @@
 
 FROM node:24-slim as builder
 WORKDIR /flow
-COPY package*.json ./
-RUN npm ci
+RUN npm install -g pnpm
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN npm run build 
+RUN pnpm run build
 
 
 FROM node:24-slim as production
 WORKDIR /flow
-COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install -g pnpm
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --prod --frozen-lockfile
 COPY --from=builder /flow/dist ./dist
 
 EXPOSE 5001
