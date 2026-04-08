@@ -9,16 +9,13 @@
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "types": [
-            "node"
-        ]
+        "forceConsistentCasingInFileNames": true
     },
     "include": [
-        "./server.ts",
-        "types.d.ts"
+        "./**/*.ts"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
     ]
 }
