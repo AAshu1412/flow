@@ -41,6 +41,7 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
                             headers: {
                                 Authorization: `Bearer ${token}`,
                                 "Content-Type": "application/json",
+                                "ngrok-skip-browser-warning": "69420"
                             },
                             body: JSON.stringify(payload),
                         }
@@ -75,6 +76,7 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
                         headers: {
                             Authorization: `Bearer ${token}`,
                             "Content-Type": "application/json",
+                            "ngrok-skip-browser-warning": "69420"
                         },
                         body: JSON.stringify(payload),
                     });
@@ -98,7 +100,7 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
 
                     const response = await fetch(`${SERVER_URL}/api/workflow/`, {
                         method: "GET",
-                        headers: { Authorization: `Bearer ${token}` },
+                        headers: { Authorization: `Bearer ${token}`, "ngrok-skip-browser-warning": "69420" },
                     });
 
                     // The backend returns an array of workflows
@@ -122,7 +124,7 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
 
                     const response = await fetch(`${SERVER_URL}/api/workflow/${id}`, {
                         method: "GET",
-                        headers: { Authorization: `Bearer ${token}` },
+                        headers: { Authorization: `Bearer ${token}`, "ngrok-skip-browser-warning": "69420" },
                     });
 
                     // The backend returns a single workflow object
@@ -144,7 +146,7 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
 
                     const response = await fetch(`${SERVER_URL}/api/workflow/all/ids`, {
                         method: "GET",
-                        headers: { Authorization: `Bearer ${token}` },
+                        headers: { Authorization: `Bearer ${token}`, "ngrok-skip-browser-warning": "69420" },
                     });
 
                     const data = (await response.json()) as APIResponse<{ workflowId: string, name?: string, description?: string }[]>;

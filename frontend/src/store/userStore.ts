@@ -67,7 +67,7 @@ export const useUserStore = create<UserStoreState>()(
                     if (!token) throw new Error("No token found");
                     const response = await fetch(`${SERVER_URL}/api/profile/nodes`, {
                         method: "GET",
-                        headers: { Authorization: `Bearer ${token}` }
+                        headers: { Authorization: `Bearer ${token}`, "ngrok-skip-browser-warning": "69420" }
                     });
 
                     const data = (await response.json()) as APIResponse<ServiceMenuCategory[]>;
@@ -110,7 +110,7 @@ export const useUserStore = create<UserStoreState>()(
                             headers: {
                                 Authorization: `Bearer ${token}`,
                                 "Content-Type": "application/json",
-                                
+                                "ngrok-skip-browser-warning": "69420"
                             },
                             body: JSON.stringify({
                                 service,
@@ -148,6 +148,7 @@ export const useUserStore = create<UserStoreState>()(
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
+                            "ngrok-skip-browser-warning": "69420"
                         },
                         body: JSON.stringify({
                             email
