@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, Save, Loader2, Workflow, Link as LinkIcon, FolderOpen, UserCircle2, MoreVertical, CheckCircle2 } from 'lucide-react';
+import { Play, Save, Loader2, Workflow, Link as LinkIcon, FolderOpen, UserCircle2, MoreVertical, CheckCircle2, Plus } from 'lucide-react';
 import { useWorkflowStore } from '../store/workflowStore';
 import { useUserStore } from '../store/userStore';
 import AccountsModal from './AccountsModal';
@@ -14,7 +14,7 @@ const generateWorkflowId = () => `wf_${uuidv4()}`;
 export default function Topbar() {
   const { isExecuting, execute_workflow, saveWorkflow } = useWorkflowStore();
   const { user, getUser } = useUserStore();
-  const { getNodes, getEdges, setNodes } = useReactFlow();
+  const { getNodes, getEdges, setNodes, setEdges } = useReactFlow();
   
   const [isAccountsModalOpen, setIsAccountsModalOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -132,6 +132,16 @@ export default function Topbar() {
     }
   };
 
+  const handleNewWorkflow = () => {
+    setWorkflowId(generateWorkflowId());
+    setWorkflowName('');
+    setWorkflowDescription('');
+    setIsExistingWorkflow(false);
+    setNodes([]);
+    setEdges([]);
+    setLastRunStatus('idle');
+  };
+
   return (
     <div className="h-16 border-b border-gray-800 bg-gray-950/95 backdrop-blur-md flex items-center justify-between px-6 z-10 sticky top-0 shadow-sm">
       <div className="flex items-center gap-4">
@@ -164,6 +174,16 @@ export default function Topbar() {
           <FolderOpen className="w-4 h-4 text-purple-400" />
           <span>Browse</span>
         </button>
+
+        {isExistingWorkflow && (
+          <button
+            onClick={handleNewWorkflow}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-200 rounded-lg text-sm font-medium transition-all shadow-sm focus:ring-2 focus:ring-gray-700 outline-none"
+          >
+            <Plus className="w-4 h-4 text-green-400" />
+            <span>New Flow</span>
+          </button>
+        )}
 
         {isExistingWorkflow ? (
            <div className="flex items-center rounded-lg bg-gray-900 border border-gray-700 divide-x divide-gray-700 shadow-sm transition-all focus-within:ring-2 focus-within:ring-gray-700 relative group overflow-hidden">
