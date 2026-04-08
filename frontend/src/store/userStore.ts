@@ -141,6 +141,7 @@ export const useUserStore = create<UserStoreState>()(
             },
             waitlistRequest: async (email: string): Promise<boolean> => {
                 try {
+                    console.log("Server url: " + SERVER_URL);
                     const response = await fetch(`${SERVER_URL}/api/waitlist/request`, {
                         method: "POST",
                         headers: {
