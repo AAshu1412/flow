@@ -1,0 +1,39 @@
+kind: Deployment
+apiVersion: apps/v1
+
+metadata:
+  name: flow-auto-backend-deployment
+  namespace: flow-auto-ns
+  labels:
+    app: flow-auto-backend-dep
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flow-auto-backend-pod-classify
+
+  template:
+    metadata:
+      name: flow-auto-backend-pod
+      namespace: flow-auto-ns
+      labels:
+        app: flow-auto-backend-pod-classify
+
+    spec:
+      containers:
+      - name: flow-auto-backend-container
+        image: aashu1412/flow-auto-backend
+        ports:
+        - containerPort: 5001
+      envFrom:
+        - secretRef:
+            name: flow-auto-backend-secret
+            
+      resources:
+        requests:
+          cpu: "250m"      # 1/4 of a CPU core baseline
+          memory: "256Mi"
+        limits:
+          cpu: "500m"      # Max 1/2 of a CPU core
+          memory: "512Mi"

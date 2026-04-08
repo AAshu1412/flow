@@ -1,0 +1,21 @@
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+
+metadata:
+  name: flow-auto-backend-hpa
+  namespace: flow-auto-ns
+
+spec:
+  scaleTargetRef:
+    name: flow-auto-backend-deployment
+
+  minReplicas: 1
+  maxReplicas: 5
+
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

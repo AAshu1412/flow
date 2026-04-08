@@ -1,0 +1,28 @@
+kind: Deployment
+apiVersion: apps/v1
+
+metadata:
+  name: flow-auto-frontend-deployment
+  namespace: flow-auto-ns
+  labels:
+    app: flow-auto-frontend-dep
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flow-auto-frontend-pod-classify
+
+  template:
+    metadata:
+      name: flow-auto-frontend-pod
+      namespace: flow-auto-ns
+      labels:
+        app: flow-auto-frontend-pod-classify
+
+    spec:
+      containers:
+      - name: flow-auto-frontend-container
+        image: aashu1412/flow-auto-frontend
+        ports:
+        - containerPort: 80

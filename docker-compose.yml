@@ -6,7 +6,7 @@ services:
       context: ./frontend
       args:
         - VITE_SERVER_URL=http://localhost:5001 
-    container_name: flow-auto-front
+    container_name: flow-auto-frontend
     ports:
       - "80:80"
     networks:
