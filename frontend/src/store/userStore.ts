@@ -109,6 +109,7 @@ export const useUserStore = create<UserStoreState>()(
                             headers: {
                                 Authorization: `Bearer ${token}`,
                                 "Content-Type": "application/json",
+                                "ngrok-skip-browser-warning": "true"
                             },
                             body: JSON.stringify({
                                 service,
