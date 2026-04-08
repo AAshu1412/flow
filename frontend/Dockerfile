@@ -6,9 +6,12 @@ WORKDIR /flow
 
 COPY package*.json ./
 
-RUN npm i 
+RUN npm ci 
 
 COPY . .
+
+ARG VITE_SERVER_URL
+ENV VITE_SERVER_URL=$VITE_SERVER_URL
 
 RUN npm run build
 
