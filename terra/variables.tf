@@ -13,3 +13,6 @@ variable "ec2_ami_id" {
   default = "ami-0ec10929233384c7f"
 }
 
+variable "env" {
+  default = "master"
+}
