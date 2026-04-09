@@ -43,6 +43,13 @@ resource "aws_security_group" "flow_auto_security_group" {
     description = "Allow HTTPS Access/Open"
   }
 
+  ingress {
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # //Outbound Rules
   egress {
     from_port   = 0
@@ -56,9 +63,9 @@ resource "aws_security_group" "flow_auto_security_group" {
 resource "aws_instance" "flow-auto-ec2" {
   #   count = 2 #Number of instance you wanna create   (meta argument)
   for_each = tomap({ # for_each is used to create multiple instances
-    "master"   = "t3.small",
-    "worker-1" = "t3.micro",
-    "worker-2" = "t3.micro",
+    "master"   = var.aws_instance_type  ,
+    "worker-1" = var.aws_instance_type  ,
+    "worker-2" = var.aws_instance_type  ,
   })
 
   depends_on      = [aws_key_pair.flow_auto_key, aws_security_group.flow_auto_security_group] # if these are not created first then ec2 will not be created
@@ -69,8 +76,7 @@ resource "aws_instance" "flow-auto-ec2" {
   ami           = var.ec2_ami_id #ubuntu
   user_data     = file("docker_installation.sh")
   root_block_device {
-    # volume_size = var.ec2_storage_size        
-    volume_size = var.env == "master" ? 12 : var.ec2_storage_size # if env is master then volume size is 12 else it is ec2_storage_size (8)
+    volume_size = var.ec2_storage_size        
     volume_type = "gp3"
   }
 

@@ -1,11 +1,11 @@
 variable "aws_instance_type" {
   type = string
-  default = "t3.micro"
+  default = "c7i-flex.large"
 }
 
 variable "ec2_storage_size" {
   type = number
-  default = 8
+  default = 12
 }
 
 variable "ec2_ami_id" {
@@ -16,3 +16,5 @@ variable "ec2_ami_id" {
 variable "env" {
   default = "master"
 }
+
+
