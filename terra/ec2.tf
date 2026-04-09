@@ -1,0 +1,71 @@
+resource "aws_key_pair" "flow_auto_key" {
+  key_name   = "flow-auto-key"
+  public_key = file("terra_ed25519.pub")
+}
+
+resource "aws_default_vpc" "default" {
+  tags = {
+    Name = "Default VPC"
+  }
+}
+
+resource "aws_security_group" "flow_auto_security_group" {
+  name   = "flow-auto-security-group"
+  vpc_id = aws_default_vpc.default.id
+
+  #//OPTIONAL(tags)
+  tags = {
+    Name = "flow-auto-security-group"
+  }
+
+  #//Inbound Rules
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow SSH Access/Open"
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTP Access/Open"
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTPS Access/Open"
+  }
+
+  # //Outbound Rules
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1" #All Protocol
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow All Outbound Access/Open"
+  }
+}
+
+resource "aws_instance" "flow-auto-ritesh-ec2-1" {
+
+  key_name        = aws_key_pair.flow_auto_key.key_name
+  security_groups = [aws_security_group.flow_auto_security_group.name]
+  instance_type   = var.aws_instance_type
+  ami             = var.ec2_ami_id #ubuntu
+  user_data       = file("docker_installation.sh")
+  root_block_device {
+    volume_size = var.ec2_storage_size
+    volume_type = "gp3"
+  }
+
+  tags = {
+    Name = "flow-auto-ritesh-ec2-1"
+  }
+}
