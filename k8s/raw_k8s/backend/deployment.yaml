@@ -26,14 +26,15 @@ spec:
         image: aashu1412/flow-auto-backend:v1
         ports:
         - containerPort: 5001
-      envFrom:
-        - secretRef:
-            name: flow-auto-backend-secret
-            
-      resources:
-        requests:
-          cpu: "250m"      # 1/4 of a CPU core baseline
-          memory: "256Mi"
-        limits:
-          cpu: "500m"      # Max 1/2 of a CPU core
-          memory: "512Mi"
+        
+        envFrom:
+          - secretRef:
+              name: flow-auto-backend-secret
+
+        resources:
+          requests:
+            cpu: "250m"      
+            memory: "256Mi"
+          limits:
+            cpu: "500m"      
+            memory: "512Mi"
