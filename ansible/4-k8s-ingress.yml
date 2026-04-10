@@ -1,0 +1,5 @@
+- hosts: master
+  tasks:
+    - name: Configure Ingress
+      script: ./4-k8s-ingress.sh
+

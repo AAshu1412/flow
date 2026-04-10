@@ -1,0 +1,5 @@
+- hosts: master
+  tasks:
+    - name: Initialize Master
+      script: ./2-k8s-master-config.sh
+

@@ -1,0 +1,7 @@
+# 1. Run the base setup on EVERY server
+- hosts: servers
+  become: yes
+  tasks:
+    - name: Install Containerd and Kubeadm on all nodes
+      script: ./1-k8s-common-install.sh
+

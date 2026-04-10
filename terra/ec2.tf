@@ -17,7 +17,20 @@ resource "aws_security_group" "flow_auto_security_group" {
   tags = {
     Name = "flow-auto-security-group"
   }
-
+ 
+  # ==========================================
+  # 🌟 THE KUBERNETES INTERNAL NETWORK FIX 🌟
+  # Allows all UDP, TCP, and ICMP traffic between
+  # the Master and Worker nodes for DNS/Flannel.
+  # ==========================================
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1" # -1 means ALL protocols
+    self        = true # Applies strictly to instances inside this Security Group
+    description = "Allow ALL internal cluster traffic (UDP/TCP/ICMP)"
+  }
+ 
   #//Inbound Rules
   ingress {
     from_port   = 22
@@ -48,6 +61,8 @@ resource "aws_security_group" "flow_auto_security_group" {
     to_port     = 6443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Kubernetes API Server"
+
   }
 
    ingress {
@@ -55,6 +70,7 @@ resource "aws_security_group" "flow_auto_security_group" {
     to_port     = 5001
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+description = "Flow Auto Backend Port"
   }
 
   ingress {
@@ -69,6 +85,8 @@ from_port = 10250
 to_port = 10250
 protocol = "tcp"
 cidr_blocks = ["0.0.0.0/0"]
+    description = "Kubelet API (for kubectl logs/exec)"
+
   }
 ingress {
 from_port = 27017

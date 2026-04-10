@@ -1,0 +1,14 @@
+[workers]
+server2 ansible_host=13.233.94.156
+server3 ansible_host=3.110.85.16
+
+[servers:children]
+master
+workers
+
+[servers:vars]
+ansible_user=ubuntu
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_private_key_file=/home/ashu/projects/devos/flow/terra/terra_ed25519
+
+
