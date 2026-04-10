@@ -190,7 +190,7 @@ const google_authenticate_callback = async (req: Request, res: Response) => {
 
             // Generate the JWT for the frontend
             const appToken = userInDB.generateToken();
-
+           console.log(`Frontend url: ${process.env.FRONTEND_URL}`);
             // 🌟 REDIRECT TO FRONTEND (Change localhost:3000 to your actual frontend URL)
             // The React app will read the token from the URL and save it to Zustand
             res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${appToken}`);

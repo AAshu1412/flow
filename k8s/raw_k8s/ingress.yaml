@@ -1,28 +1,29 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
-
 metadata:
   name: flow-auto-ingress
   namespace: flow-auto-ns
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-
+    kubernetes.io/ingress.class: nginx
 spec:
   rules:
   - http:
       paths:
-      - pathType: Prefix
-        path: /?(.*)
-        backend:
-          service:
-            name: flow-auto-frontend-svc
-            port:
-              # port number where my service is running
-              number: 80
-      - pathType: Prefix
-        path: /api(/|$)(.*)
+      # 1. Route all /api traffic to the Backend Service
+      - path: /api
+        pathType: Prefix
         backend:
           service:
             name: flow-auto-backend-svc
             port:
               number: 5001
+
+      # 2. Route everything else (/) to the Frontend Service
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: flow-auto-frontend-svc
+            port:
+              number: 80
+~                          

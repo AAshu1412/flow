@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: flow-auto-backend-container
-        image: aashu1412/flow-auto-backend
+        image: aashu1412/flow-auto-backend:v1
         ports:
         - containerPort: 5001
       envFrom:

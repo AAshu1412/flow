@@ -23,6 +23,6 @@ spec:
     spec:
       containers:
       - name: flow-auto-frontend-container
-        image: aashu1412/flow-auto-frontend
+        image: aashu1412/flow-auto-frontend:v1
         ports:
         - containerPort: 80

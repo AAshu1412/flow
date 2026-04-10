@@ -50,6 +50,49 @@ resource "aws_security_group" "flow_auto_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+   ingress {
+    from_port   = 5001
+    to_port     = 5001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+from_port = 8080
+to_port = 8080
+protocol = "tcp"
+cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+from_port = 10250
+to_port = 10250
+protocol = "tcp"
+cidr_blocks = ["0.0.0.0/0"]
+  }
+ingress {
+from_port = 27017
+to_port = 27017
+protocol ="tcp"
+cidr_blocks =["0.0.0.0/0"]
+}
+
+ingress {
+
+from_port=27016
+to_port=27016
+protocol="tcp"
+cidr_blocks=["0.0.0.0/0"]
+
+}
+
+ingress {
+
+from_port=27015
+to_port=27015
+protocol="tcp"
+cidr_blocks=["0.0.0.0/0"]
+}
   # //Outbound Rules
   egress {
     from_port   = 0
