@@ -3,13 +3,11 @@ kind: Ingress
 metadata:
   name: flow-auto-ingress
   namespace: flow-auto-ns
-  annotations:
-    kubernetes.io/ingress.class: nginx
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
-      # 1. Route all /api traffic to the Backend Service
       - path: /api
         pathType: Prefix
         backend:
@@ -18,7 +16,6 @@ spec:
             port:
               number: 5001
 
-      # 2. Route everything else (/) to the Frontend Service
       - path: /
         pathType: Prefix
         backend:
@@ -26,4 +23,3 @@ spec:
             name: flow-auto-frontend-svc
             port:
               number: 80
-~                          
