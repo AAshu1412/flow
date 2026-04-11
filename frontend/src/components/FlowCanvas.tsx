@@ -84,7 +84,7 @@ export default function FlowCanvas() {
         fitView
       >
         <Background gap={16} size={1} color="#334155" />
-        <Controls className="bg-gray-900 border-gray-800 fill-gray-300" />
+        <Controls className="flex flex-col overflow-hidden rounded-lg shadow-lg [&>button]:!bg-gray-950 [&>button]:!border-b-gray-800 [&>button]:!fill-gray-400 hover:[&>button]:!bg-gray-900 hover:[&>button]:!fill-gray-200 [&>button]:transition-colors" />
         <MiniMap
           nodeColor="#3b82f6"
           maskColor="rgba(0, 0, 0, 0.4)"

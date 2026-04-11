@@ -5,7 +5,7 @@ const node_test = async (req: Request, res: Response) => {
     try {
         const userId = req.db_doc_id;
         const { service, operation, selectedAccounts, inputs } = req.body;
-
+        
         console.log("[DEBUG] Request Payload:", { userId, service, operation, selectedAccounts, inputs });
         const accountId = selectedAccounts || "";
         const nodeInputs = inputs || {};

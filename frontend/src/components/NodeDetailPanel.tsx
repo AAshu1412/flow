@@ -96,8 +96,19 @@ export default function NodeDetailPanel() {
   const runTestNodeLocally = async () => {
     if (!nodeData || !selectedNodeId) return;
     setIsLocalTesting(true);
+    
+    // Inject default values if they are missing from user inputs
+    const reqInputs = { ...(nodeData.inputs || {}) };
+    if (profile && profile.inputs) {
+      profile.inputs.forEach((input: any) => {
+        if (reqInputs[input.key] === undefined && input.defaultValue !== undefined) {
+          reqInputs[input.key] = input.defaultValue;
+        }
+      });
+    }
+
     try {
-      const res = await node_test(nodeData.service, nodeData.operation, nodeData.selectedAccounts || '', nodeData.inputs || {});
+      const res = await node_test(nodeData.service, nodeData.operation, nodeData.selectedAccounts || '', reqInputs);
       const result = res?.data || res;
       // Store in node data so DynamicNode can also see it
       setNodes((nds) => nds.map(n => {

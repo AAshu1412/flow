@@ -27,6 +27,16 @@ export const executeSingleNode = async (
     // 2. Load Profile
     const node = getNodeProfileForBackendProcessing(service, operation);
     
+    // 2.5 Inject Default Values for Missing Inputs
+    const effectiveInputs = { ...inputs };
+    if (node.inputs) {
+        node.inputs.forEach((inputDef: any) => {
+            if (effectiveInputs[inputDef.key] === undefined && inputDef.defaultValue !== undefined) {
+                effectiveInputs[inputDef.key] = inputDef.defaultValue;
+            }
+        });
+    }
+
     // 3. Prepare Environment Object
     // We start with the extraContext (which contains the full_envelope)
     // and add the userId so the node can use it if needed.
@@ -67,7 +77,7 @@ export const executeSingleNode = async (
     // 6. Execute Node
     // We pass the inputs AND the enriched nodeEnvironment (token + envelope + userId)
     console.log("[EXECUTOR] Environment ready. Executing node logic...");
-    const result = await node.execute(inputs, nodeEnvironment);
+    const result = await node.execute(effectiveInputs, nodeEnvironment);
     
     console.log(`--- [EXECUTOR] FINISHED: ${service}/${operation} ---\n`);
     
@@ -251,8 +261,28 @@ export const runWorkflowGraph = async (userId: string | Types.ObjectId, payload:
     const envelope: Record<string, any> = {};
     
     const allNodeIds = Object.keys(payload.nodes);
-    const targetNodeIds = new Set(payload.edges.map(e => e.target));
-    const startingNodes = allNodeIds.filter(id => !targetNodeIds.has(id));
+    const edges = payload.edges || [];
+    
+    // Find all nodes that have an incoming edge
+    const targetNodeIds = new Set(edges.map(e => e.target));
+    
+    // Find all nodes that are connected in any way
+    const sourceNodeIds = new Set(edges.map(e => e.source));
+    const connectedNodeIds = new Set([...sourceNodeIds, ...targetNodeIds]);
+    
+    let startingNodes: string[] = [];
+
+    if (connectedNodeIds.size > 0) {
+        // Only start from nodes that actually participate in a flow and have no incoming edges
+        startingNodes = allNodeIds.filter(id => connectedNodeIds.has(id) && !targetNodeIds.has(id));
+    } else {
+        // No edges. Fallback to triggerNodeId, or just the first node
+        if (payload.triggerNodeId && payload.nodes[payload.triggerNodeId]) {
+            startingNodes = [payload.triggerNodeId];
+        } else if (allNodeIds.length > 0) {
+            startingNodes = [allNodeIds[0]];
+        }
+    }
 
     if (startingNodes.length === 0) {
         throw new Error("No starting nodes found! Is your workflow an infinite loop?");
