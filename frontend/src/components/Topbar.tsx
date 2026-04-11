@@ -143,45 +143,48 @@ export default function Topbar() {
   };
 
   return (
-    <div className="h-16 border-b border-gray-800 bg-gray-950/95 backdrop-blur-md flex items-center justify-between px-6 z-10 sticky top-0 shadow-sm">
-      <div className="flex items-center gap-4">
-         <div className="flex items-center gap-2 pr-4 border-r border-gray-800">
+    <div className="h-16 border-b border-gray-800 bg-gray-950/95 backdrop-blur-md flex items-center justify-between px-3 md:px-6 z-10 sticky top-0 shadow-sm gap-2">
+      <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+         <div className="flex items-center gap-2 pr-2 md:pr-4 border-r border-gray-800 shrink-0">
              <Workflow className="w-5 h-5 text-blue-500" />
-             <h1 className="font-bold text-gray-100 tracking-wide">Flow</h1>
+             <h1 className="hidden sm:block font-bold text-gray-100 tracking-wide">Flow</h1>
          </div>
          {/* Workflow ID display (read-only) */}
-         <div className="flex items-center gap-2">
-           <span className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">ID:</span>
-           <span className="bg-gray-900 border border-gray-800 rounded-md px-2.5 py-1 text-[11px] text-gray-400 font-mono select-all cursor-default max-w-[220px] truncate" title={workflowId}>
+         <div className="flex items-center gap-2 min-w-0 shrink">
+           <span className="hidden sm:inline text-[10px] text-gray-500 uppercase tracking-wider font-semibold">ID:</span>
+           <span className="bg-gray-900 border border-gray-800 rounded-md px-2 py-1 text-[10px] md:text-[11px] text-gray-400 font-mono select-all cursor-default max-w-[80px] sm:max-w-[120px] md:max-w-[220px] truncate" title={workflowId}>
              {workflowId}
            </span>
          </div>
       </div>
       
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
         <button 
            onClick={() => setIsAccountsModalOpen(true)}
-           className="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-200 rounded-lg text-sm font-medium transition-all shadow-sm focus:ring-2 focus:ring-gray-700 outline-none"
+           className="flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-200 rounded-lg text-sm font-medium transition-all shadow-sm focus:ring-2 focus:ring-gray-700 outline-none"
+           title="Integrations"
         >
-          <LinkIcon className="w-4 h-4 text-blue-400" />
-          <span>Integrations</span>
+          <LinkIcon className="w-4 h-4 text-blue-400 shrink-0" />
+          <span className="hidden lg:inline">Integrations</span>
         </button>
 
         <button
           onClick={() => setIsSavedWorkflowsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-200 rounded-lg text-sm font-medium transition-all shadow-sm focus:ring-2 focus:ring-gray-700 outline-none"
+          className="flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-200 rounded-lg text-sm font-medium transition-all shadow-sm focus:ring-2 focus:ring-gray-700 outline-none"
+          title="Browse"
         >
-          <FolderOpen className="w-4 h-4 text-purple-400" />
-          <span>Browse</span>
+          <FolderOpen className="w-4 h-4 text-purple-400 shrink-0" />
+          <span className="hidden lg:inline">Browse</span>
         </button>
 
         {isExistingWorkflow && (
           <button
             onClick={handleNewWorkflow}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-200 rounded-lg text-sm font-medium transition-all shadow-sm focus:ring-2 focus:ring-gray-700 outline-none"
+            className="flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-200 rounded-lg text-sm font-medium transition-all shadow-sm focus:ring-2 focus:ring-gray-700 outline-none"
+            title="New Flow"
           >
-            <Plus className="w-4 h-4 text-green-400" />
-            <span>New Flow</span>
+            <Plus className="w-4 h-4 text-green-400 shrink-0" />
+            <span className="hidden md:inline">New Flow</span>
           </button>
         )}
 
@@ -204,7 +207,7 @@ export default function Topbar() {
                ) : (
                  <Save className="w-4 h-4 text-purple-400 font-bold" />
                )}
-               <span className="pr-1">{showSaveSuccess ? 'Saved' : 'Update'}</span>
+               <span className="hidden md:inline pr-1">{showSaveSuccess ? 'Saved' : 'Update'}</span>
              </button>
              <button
                onClick={() => setIsSaveModalOpen(true)}
@@ -217,21 +220,23 @@ export default function Topbar() {
         ) : (
           <button
             onClick={() => setIsSaveModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm font-medium transition-all"
+            className="flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm font-medium transition-all"
+            title="Save"
           >
-            <Save className="w-4 h-4" />
-            <span>Save</span>
+            <Save className="w-4 h-4 shrink-0" />
+            <span className="hidden md:inline">Save</span>
           </button>
         )}
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2">
            <button 
              onClick={handleRun}
              disabled={isExecuting}
-             className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+             className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white rounded-lg text-sm font-bold transition-all shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+             title="Run Workflow"
            >
-             {isExecuting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
-             <span>Run Workflow</span>
+             {isExecuting ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> : <Play className="w-4 h-4 fill-current shrink-0" />}
+             <span className="hidden sm:inline">Run Workflow</span>
            </button>
            
            {/* Status Indicator */}
