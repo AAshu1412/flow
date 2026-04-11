@@ -8,6 +8,7 @@ import {
   useEdgesState,
   addEdge,
   useReactFlow,
+  MarkerType,
 } from '@xyflow/react';
 import DynamicNode from './DynamicNode';
 import { useDnD } from './DnDContext';
@@ -81,6 +82,7 @@ export default function FlowCanvas() {
         onDrop={onDrop}
         onEdgeClick={onEdgeClick}
         deleteKeyCode={['Backspace', 'Delete']}
+        defaultEdgeOptions={{ markerEnd: { type: MarkerType.ArrowClosed, width: 25, height: 25 } }}
         fitView
       >
         <Background gap={16} size={1} color="#334155" />
