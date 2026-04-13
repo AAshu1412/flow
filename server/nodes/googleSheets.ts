@@ -35,7 +35,7 @@ async function handleSheetsApiError(response: Response): Promise<Response> {
 
 // --- The Exported Node Operations ---
 export const googleSheetsNodes: Record<string, NodeDefinition> = {
-    
+
     // Operation 1: Append Row
     "google_sheets_append_row_v1": {
         service: "google_sheets",
@@ -47,26 +47,26 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             icon: "https://img.icons8.com/?size=100&id=30461&format=png&color=000000",
         },
         inputs: [
-            { 
-                key: "spreadsheetId", 
-                label: "Spreadsheet ID", 
-                type: "string", 
-                mandatory: true, 
-                description: "The unique ID of the spreadsheet file." 
+            {
+                key: "spreadsheetId",
+                label: "Spreadsheet ID",
+                type: "string",
+                mandatory: true,
+                description: "The unique ID of the spreadsheet file."
             },
-            { 
-                key: "range", 
-                label: "Sheet Range", 
-                type: "string", 
-                mandatory: true, 
-                description: "The A1 notation of the sheet to append to (e.g., 'Sheet1!A:A')." 
+            {
+                key: "range",
+                label: "Sheet Range",
+                type: "string",
+                mandatory: true,
+                description: "The A1 notation of the sheet to append to (e.g., 'Sheet1!A:A')."
             },
-            { 
-                key: "values", 
-                label: "Row Values", 
-                type: "string", 
-                mandatory: true, 
-                description: "Comma-separated values for the new row (e.g., 'John, Doe, 555-0199')." 
+            {
+                key: "values",
+                label: "Row Values",
+                type: "string",
+                mandatory: true,
+                description: "Comma-separated values for the new row (e.g., 'John, Doe, 555-0199')."
             }
         ],
         execute: async function (evaluatedInputs, environment) {
@@ -94,7 +94,7 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             });
 
             await handleSheetsApiError(response);
-            return await response.json(); 
+            return await response.json();
         }
     },
 
@@ -109,19 +109,19 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             icon: "https://img.icons8.com/?size=100&id=30461&format=png&color=000000",
         },
         inputs: [
-            { 
-                key: "spreadsheetId", 
-                label: "Spreadsheet ID", 
-                type: "string", 
-                mandatory: true, 
-                description: "The unique ID of the spreadsheet file." 
+            {
+                key: "spreadsheetId",
+                label: "Spreadsheet ID",
+                type: "string",
+                mandatory: true,
+                description: "The unique ID of the spreadsheet file."
             },
-            { 
-                key: "range", 
-                label: "Range", 
-                type: "string", 
-                mandatory: true, 
-                description: "The A1 notation of the exact cells to read (e.g., 'Sheet1!A1:D100')." 
+            {
+                key: "range",
+                label: "Range",
+                type: "string",
+                mandatory: true,
+                description: "The A1 notation of the exact cells to read (e.g., 'Sheet1!A1:D100')."
             }
         ],
         execute: async function (evaluatedInputs, environment) {
@@ -139,7 +139,7 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             });
 
             await handleSheetsApiError(response);
-            
+
             // Returns an object containing a 'values' array: 
             // { "values": [ ["Row1Col1", "Row1Col2"], ["Row2Col1", "Row2Col2"] ] }
             return await response.json();
@@ -157,12 +157,12 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             icon: "https://img.icons8.com/?size=100&id=30461&format=png&color=000000",
         },
         inputs: [
-            { 
-                key: "spreadsheetId", 
-                label: "Spreadsheet ID", 
-                type: "string", 
-                mandatory: true, 
-                description: "The unique ID of the spreadsheet file." 
+            {
+                key: "spreadsheetId",
+                label: "Spreadsheet ID",
+                type: "string",
+                mandatory: true,
+                description: "The unique ID of the spreadsheet file."
             }
         ],
         execute: async function (evaluatedInputs, environment) {
@@ -182,12 +182,12 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             });
 
             await handleSheetsApiError(response);
-            
+
             // Returns metadata. You can find the tab names under data.sheets[i].properties.title
             return await response.json();
         }
     },
-     // Operation 4: Create Spreadsheet
+    // Operation 4: Create Spreadsheet
     "google_sheets_create_spreadsheet_v1": {
         service: "google_sheets",
         operation: "create_spreadsheet",
@@ -198,12 +198,12 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             icon: "https://img.icons8.com/?size=100&id=30461&format=png&color=000000",
         },
         inputs: [
-            { 
-                key: "title", 
-                label: "Spreadsheet Title", 
-                type: "string", 
-                mandatory: true, 
-                description: "The name of the new spreadsheet." 
+            {
+                key: "title",
+                label: "Spreadsheet Title",
+                type: "string",
+                mandatory: true,
+                description: "The name of the new spreadsheet."
             }
         ],
         execute: async function (evaluatedInputs, environment) {
@@ -228,7 +228,7 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             });
 
             await handleSheetsApiError(response);
-            
+
             // Returns the Spreadsheet object which includes the new `spreadsheetId` and `spreadsheetUrl`
             return await response.json();
         }
@@ -245,26 +245,26 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             icon: "https://img.icons8.com/?size=100&id=30461&format=png&color=000000",
         },
         inputs: [
-            { 
-                key: "spreadsheetId", 
-                label: "Spreadsheet ID", 
-                type: "string", 
-                mandatory: true, 
-                description: "The unique ID of the spreadsheet file." 
+            {
+                key: "spreadsheetId",
+                label: "Spreadsheet ID",
+                type: "string",
+                mandatory: true,
+                description: "The unique ID of the spreadsheet file."
             },
-            { 
-                key: "range", 
-                label: "Sheet Range", 
-                type: "string", 
-                mandatory: true, 
-                description: "The A1 notation of the sheet to append to (e.g., 'Sheet1!1:1')." 
+            {
+                key: "range",
+                label: "Sheet Range",
+                type: "string",
+                mandatory: true,
+                description: "The A1 notation of the sheet to append to (e.g., 'Sheet1!1:1')."
             },
-            { 
-                key: "values", 
-                label: "Column Values", 
-                type: "string", 
-                mandatory: true, 
-                description: "Comma-separated values for the new column (e.g., 'Header, Row1, Row2')." 
+            {
+                key: "values",
+                label: "Column Values",
+                type: "string",
+                mandatory: true,
+                description: "Comma-separated values for the new column (e.g., 'Header, Row1, Row2')."
             }
         ],
         execute: async function (evaluatedInputs, environment) {
@@ -284,13 +284,13 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
                 },
                 body: JSON.stringify({
                     // MAJOR DIMENSION = COLUMNS tells Google to write this array vertically
-                    majorDimension: "COLUMNS", 
+                    majorDimension: "COLUMNS",
                     values: [colArray]
                 })
             });
 
             await handleSheetsApiError(response);
-            return await response.json(); 
+            return await response.json();
         }
     },
 
@@ -305,19 +305,19 @@ export const googleSheetsNodes: Record<string, NodeDefinition> = {
             icon: "https://img.icons8.com/?size=100&id=30461&format=png&color=000000",
         },
         inputs: [
-            { 
-                key: "spreadsheetId", 
-                label: "Spreadsheet ID", 
-                type: "string", 
-                mandatory: true, 
-                description: "The unique ID of the spreadsheet file." 
+            {
+                key: "spreadsheetId",
+                label: "Spreadsheet ID",
+                type: "string",
+                mandatory: true,
+                description: "The unique ID of the spreadsheet file."
             },
-            { 
-                key: "range", 
-                label: "Range", 
-                type: "string", 
-                mandatory: true, 
-                description: "The A1 notation of the exact column to read (e.g., 'Sheet1!A:A')." 
+            {
+                key: "range",
+                label: "Range",
+                type: "string",
+                mandatory: true,
+                description: "The A1 notation of the exact column to read (e.g., 'Sheet1!A:A')."
             }
         ],
         execute: async function (evaluatedInputs, environment) {
