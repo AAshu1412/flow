@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./frontend/src/assets/hero.png" alt="Flow Banner" width="100%" />
+  <img src="./frontend/src/assets/hero.png" alt="Flow Banner" width="25%" />
 </p>
 
 <h1 align="center">⚡ Flow — Visual Workflow Automation Engine</h1>
@@ -34,7 +34,7 @@
 
 > 🎬 **Video Walkthrough** — [Watch on YouTube / Google Drive](YOUR_VIDEO_LINK_HERE)
 >
-> _Replace the link above with your shareable YouTube or Google Drive video URL._
+
 
 ---
 
@@ -165,47 +165,6 @@ Users visually construct automation pipelines by dragging service nodes onto a R
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Workflow Execution Flow
-
-```
-User clicks "Run Workflow"
-        │
-        ▼
-┌─ Topbar.tsx: buildPayload() ─────────────────────────────┐
-│  Serializes canvas nodes + edges into WorkflowPayload     │
-│  Identifies triggerNodeId (Manual Input or first node)    │
-└───────────────────────┬───────────────────────────────────┘
-                        │ POST /api/workflow/execute
-                        ▼
-┌─ workflow-controller.ts ─────────────────────────────────┐
-│  Validates payload → calls runWorkflowGraph()             │
-└───────────────────────┬───────────────────────────────────┘
-                        ▼
-┌─ workflow-helper.ts: runWorkflowGraph() ─────────────────┐
-│                                                           │
-│  1. Auto-detect starting nodes (no incoming edges)        │
-│  2. Initialize BFS queue + Data Envelope {}               │
-│                                                           │
-│  for each node in queue:                                  │
-│    ├─ evaluateInputs() → replace {{var}} with real values │
-│    ├─ if Router → evaluateRouter() → pick winning handle  │
-│    ├─ else → executeSingleNode()                          │
-│    │   ├─ Validate operation via registry                 │
-│    │   ├─ Inject default values for missing inputs        │
-│    │   ├─ Refresh OAuth token if expired                  │
-│    │   ├─ Call node.execute(inputs, environment)          │
-│    │   └─ Store result → envelope[nodeId] = result        │
-│    └─ Enqueue downstream nodes (follow edges)             │
-│                                                           │
-│  Return: envelope { nodeId: result, ... }                 │
-└───────────────────────┬───────────────────────────────────┘
-                        │
-                        ▼
-┌─ Topbar.tsx: handleRun() ────────────────────────────────┐
-│  Maps envelope results back to each canvas node as        │
-│  lastRunOutput for inline result display                  │
-└──────────────────────────────────────────────────────────┘
-```
 
 ---
 
@@ -530,17 +489,6 @@ flow/
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
 
 ## 📄 License
 
