@@ -38,6 +38,26 @@
 
 ---
 
+---
+
+## Project Photos
+
+<p align="center">
+  <img src="./assets/project photo/Screenshot From 2026-04-13 18-40-02.png" alt="Flow Banner" width="100%" />
+    <img src="./assets/project photo/Screenshot From 2026-04-13 18-39-53.png" alt="Flow Banner" width="100%" />
+</p>
+
+---
+
+
+## Architecture Diagram
+
+<p align="center">
+  <img src="./assets/architecture/flow.png" alt="Flow Banner" width="100%" />
+</p>
+
+---
+
 ## 📖 Overview
 
 **Flow** is a full-stack, production-ready workflow automation platform inspired by tools like Zapier and n8n — but designed from scratch with a modern stack and self-hosted infrastructure.
